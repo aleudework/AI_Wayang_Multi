@@ -1,5 +1,5 @@
-from ai_wayang_single.wayang.plan_mapper import PlanMapper
-from ai_wayang_single.config.settings import MCP_CONFIG, DEBUGGER_MODEL_CONFIG, INPUT_CONFIG, OUTPUT_CONFIG
+from ai_wayang_multi.wayang.plan_mapper import PlanMapper
+from ai_wayang_multi.config.settings import MCP_CONFIG, DEBUGGER_MODEL_CONFIG, INPUT_CONFIG, OUTPUT_CONFIG
 
 config = {"input_config": INPUT_CONFIG, "output_config": OUTPUT_CONFIG}
 

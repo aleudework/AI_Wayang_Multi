@@ -1,13 +1,13 @@
 # Import libraries
 from mcp.server.fastmcp import FastMCP
-from ai_wayang_single.config.settings import MCP_CONFIG, INPUT_CONFIG, OUTPUT_CONFIG, DEBUGGER_MODEL_CONFIG
-from ai_wayang_single.llm.agent_builder import Builder
-from ai_wayang_single.llm.agent_debugger import Debugger
-from ai_wayang_single.wayang.plan_mapper import PlanMapper
-from ai_wayang_single.wayang.plan_validator import PlanValidator
-from ai_wayang_single.wayang.wayang_executor import WayangExecutor
-from ai_wayang_single.utils.logger import Logger
-from ai_wayang_single.utils.schema_loader import SchemaLoader
+from ai_wayang_multi.config.settings import MCP_CONFIG, INPUT_CONFIG, OUTPUT_CONFIG, DEBUGGER_MODEL_CONFIG
+from ai_wayang_multi.llm.agent_builder import Builder
+from ai_wayang_multi.llm.agent_debugger import Debugger
+from ai_wayang_multi.wayang.plan_mapper import PlanMapper
+from ai_wayang_multi.wayang.plan_validator import PlanValidator
+from ai_wayang_multi.wayang.wayang_executor import WayangExecutor
+from ai_wayang_multi.utils.logger import Logger
+from ai_wayang_multi.utils.schema_loader import SchemaLoader
 from datetime import datetime
 import os
 

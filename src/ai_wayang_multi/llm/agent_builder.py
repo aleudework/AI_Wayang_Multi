@@ -1,7 +1,7 @@
 from openai import OpenAI
-from ai_wayang_single.config.settings import BUILDER_MODEL_CONFIG
-from ai_wayang_single.llm.models import WayangPlan
-from ai_wayang_single.llm.prompt_loader import PromptLoader
+from ai_wayang_multi.config.settings import BUILDER_MODEL_CONFIG
+from ai_wayang_multi.llm.models import WayangPlan
+from ai_wayang_multi.llm.prompt_loader import PromptLoader
 
 class Builder:
     """
