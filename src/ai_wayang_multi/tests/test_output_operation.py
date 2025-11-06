@@ -1,6 +1,6 @@
-from ai_wayang_simple.wayang.plan_mapper import PlanMapper
-from ai_wayang_simple.llm.models import WayangOperation, WayangPlan
-from ai_wayang_simple.config.settings import MCP_CONFIG, DEBUGGER_MODEL_CONFIG, INPUT_CONFIG, OUTPUT_CONFIG
+from ai_wayang_multi.wayang.plan_mapper import PlanMapper
+from ai_wayang_multi.llm.models import WayangOperation, WayangPlan
+from ai_wayang_multi.config.settings import MCP_CONFIG, DEBUGGER_MODEL_CONFIG, INPUT_CONFIG, OUTPUT_CONFIG
 from pydantic import BaseModel, Field
 from typing import List, Optional
 

@@ -1,5 +1,5 @@
-from ai_wayang_simple.wayang.plan_mapper import PlanMapper
-from ai_wayang_simple.config.settings import MCP_CONFIG, JDBC_CONFIG, DEBUGGER_MODEL_CONFIG
+from ai_wayang_multi.wayang.plan_mapper import PlanMapper
+from ai_wayang_multi.config.settings import MCP_CONFIG, JDBC_CONFIG, DEBUGGER_MODEL_CONFIG
 
 mapper = PlanMapper(JDBC_CONFIG)
 

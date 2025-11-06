@@ -1,5 +1,5 @@
 import pytest
-from ai_wayang_simple.llm.agent_builder import Builder
+from ai_wayang_multi.llm.agent_builder import Builder
 
 def test_llm_output():
     llm = Builder()

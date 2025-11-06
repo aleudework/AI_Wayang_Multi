@@ -1,5 +1,5 @@
 import pytest
-from ai_wayang_simple.llm.prompt_loader import PromptLoader
+from ai_wayang_multi.llm.prompt_loader import PromptLoader
 
 pl = PromptLoader()
 
