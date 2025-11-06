@@ -92,7 +92,7 @@ def query_wayang(describe_wayang_plan: str) -> str:
 
         # Logging
         print("[INFO] Validating plan")
-        logger.add_message(f"Class: PlanValidator Validates Plan")
+        logger.add_message(f"Class: PlanValidator Validates Plan", "")
 
 
         # Validate plan before execution
@@ -114,8 +114,8 @@ def query_wayang(describe_wayang_plan: str) -> str:
         if val_success:
             # Execute plan in Wayang
             print("[INFO] Plan sent to Wayang for execution")
-            logger.add_message("Wayang: Sent to Wayang")
             status_code, result = wayang_executor.execute_plan(wayang_plan)
+            logger.add_message("Wayang: Sent to Wayang", "")
             
             # Log if plan couldn't execute
             if status_code != 200:
@@ -155,7 +155,6 @@ def query_wayang(describe_wayang_plan: str) -> str:
 
                 # Map the debugged plan to JSON-format
                 wayang_plan = plan_mapper.plan_to_json(raw_plan)
-                logger.add_message()
                 print("[INFO] Plan mapped by PlanMapper")
                 logger.add_message("Class: PlanMapper Mapped Debug Plan", "")
                 
@@ -188,6 +187,7 @@ def query_wayang(describe_wayang_plan: str) -> str:
                 # Execute Wayang plan
                 print(f"[INFO] Plan {version} sent to Wayang for execution")
                 status_code, result = wayang_executor.execute_plan(wayang_plan)
+                logger.add_message("Wayang: Sent to Wayang", "")
 
                 # Break debugging loop if sucessfully executed
                 if status_code == 200:
