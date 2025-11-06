@@ -73,8 +73,8 @@ def query_wayang(describe_wayang_plan: str) -> str:
 
         # Logging
         print("[INFO] Draft generated")
-        logger.add_message("Agent Usage: BuilderAgent information", {"model": str(response["raw"].model), "usage": response["raw"].usage.model_dump()})
-        logger.add_message("Agent: BuilderAgent's raw plan", raw_plan.model_dump())
+        logger.add_message("Agent Usage: BuilderAgent Information", {"model": str(response["raw"].model), "usage": response["raw"].usage.model_dump()})
+        logger.add_message("Agent: BuilderAgent Raw Plan", raw_plan.model_dump())
 
 
         ### --- Map Raw Plan to Executable Plan --- ###
@@ -85,10 +85,15 @@ def query_wayang(describe_wayang_plan: str) -> str:
 
         # Logging
         print("[INFO] Plan mapped")
-        logger.add_message("Mapped plan finalized for execution", {"version": 1, "plan": wayang_plan})
+        logger.add_message("Class: PlanMapper Mapped plan finalized for execution", {"version": 1, "plan": wayang_plan})
 
 
         ### --- Validate Plan --- ###
+
+        # Logging
+        print("[INFO] Validating plan")
+        logger.add_message(f"Class: PlanValidator Validates Plan")
+
 
         # Validate plan before execution
         val_success, val_errors = plan_validator.validate_plan(wayang_plan)
@@ -109,6 +114,7 @@ def query_wayang(describe_wayang_plan: str) -> str:
         if val_success:
             # Execute plan in Wayang
             print("[INFO] Plan sent to Wayang for execution")
+            logger.add_message("Wayang: Sent to Wayang")
             status_code, result = wayang_executor.execute_plan(wayang_plan)
             
             # Log if plan couldn't execute
@@ -138,14 +144,21 @@ def query_wayang(describe_wayang_plan: str) -> str:
 
                 # Map and anonymize plan from executable json to raw format
                 failed_plan = plan_mapper.plan_from_json(wayang_plan)
+                logger.add_message("Class: PlanMapper Simplifies JSON", "")
+                print(f"[INFO] PlanMapper Simplifies JSON")
 
                 # Debug plan
                 response = debugger_agent.debug_plan(failed_plan, wayang_errors=result, val_errors=val_errors) # Debug plan
                 version = debugger_agent.get_version() # Current plan version
                 raw_plan = response.get("wayang_plan") # Get only the debugged plan
+                print("[INFO] Plan debugged by debugger")
 
                 # Map the debugged plan to JSON-format
                 wayang_plan = plan_mapper.plan_to_json(raw_plan)
+                logger.add_message()
+                print("[INFO] Plan mapped by PlanMapper")
+                logger.add_message("Class: PlanMapper Mapped Debug Plan", "")
+                
 
                 # Get current plan version
                 version = debugger_agent.get_version()
@@ -157,6 +170,9 @@ def query_wayang(describe_wayang_plan: str) -> str:
 
                 # Validate debugged plan
                 val_success, val_errors = plan_validator.validate_plan(wayang_plan)
+
+                print(f"[INFO] PlanValidator validates debugger's plan")
+                logger.add_message("Class: PlanValidator Validated Debugger Plan", "")
 
                 # If plan failed validation, continue debugging
                 if not val_success:
