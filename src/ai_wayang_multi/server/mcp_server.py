@@ -73,8 +73,8 @@ def query_wayang(describe_wayang_plan: str) -> str:
 
         # Logging
         print("[INFO] Draft generated")
-        logger.add_message("Builder Agent information", {"model": str(response["raw"].model), "usage": response["raw"].usage.model_dump()})
-        logger.add_message("Builder Agent's abstract/raw plan", raw_plan.model_dump())
+        logger.add_message("Agent Usage: BuilderAgent information", {"model": str(response["raw"].model), "usage": response["raw"].usage.model_dump()})
+        logger.add_message("Agent: BuilderAgent's raw plan", raw_plan.model_dump())
 
 
         ### --- Map Raw Plan to Executable Plan --- ###
@@ -100,7 +100,7 @@ def query_wayang(describe_wayang_plan: str) -> str:
         else:
             # Logging if validation fails
             print(f"[INFO] Plan {version} failed validation: {val_errors}")
-            logger.add_message(f"Failed validation", {"version": version, "errors": val_errors})
+            logger.add_message(f"Err: Val error. Failed validation", {"version": version, "errors": val_errors})
             status_code = 400
 
 
@@ -114,7 +114,7 @@ def query_wayang(describe_wayang_plan: str) -> str:
             # Log if plan couldn't execute
             if status_code != 200:
                 print(f"[INFO] Couldn't execute plan succesfully, status {status_code}")
-                logger.add_message("Plan executed unsucessful", {"status_code": status_code, "output": result})
+                logger.add_message("Err: Wayang error. Plan executed unsucessful", {"status_code": status_code, "output": result})
         
 
         ### --- Debug Plan --- ###
@@ -151,9 +151,9 @@ def query_wayang(describe_wayang_plan: str) -> str:
                 version = debugger_agent.get_version()
 
                 # Logging
-                logger.add_message(f"Debug version {version}", {"model": str(response["raw"].model), "usage": response["raw"].usage.model_dump()})
-                logger.add_message(f"Debugger Agents thoughts, plan {version}", {"version": version, "thoughts": raw_plan.thoughts})
-                logger.add_message(f"Debugged plan: {version}", {"version": version, "plan": wayang_plan})
+                logger.add_message(f"Agent Usage: DebuggerAgent. Debug version {version} information", {"model": str(response["raw"].model), "usage": response["raw"].usage.model_dump()})
+                logger.add_message(f"Agent: DebuggerAgent's thoughts, plan {version}", {"version": version, "thoughts": raw_plan.thoughts})
+                logger.add_message(f"Agent: DebuggerAgent's plan: {version}", {"version": version, "plan": wayang_plan})
 
                 # Validate debugged plan
                 val_success, val_errors = plan_validator.validate_plan(wayang_plan)
@@ -162,7 +162,7 @@ def query_wayang(describe_wayang_plan: str) -> str:
                 if not val_success:
                     # Logging failure
                     print(f"[INFO] Plan {version} failed validation: {val_errors}")
-                    logger.add_message(f"Failed validation", {"version": version, "errors": val_errors})
+                    logger.add_message(f"Err: Val error. Failed validation", {"version": version, "errors": val_errors})
                     status_code = 400
                     result = None
                     continue
@@ -180,13 +180,13 @@ def query_wayang(describe_wayang_plan: str) -> str:
                 # Continue debugging if execution failed
                 if status_code != 200:
                     print(f"[ERROR] Couldn't execute plan version {version}, status {status_code}")
-                    logger.add_message(f"Plan version {version} executed unsucessful", {"status_code": status_code, "output": result})
+                    logger.add_message(f"Err: Wayang error. Plan version {version} executed unsucessful", {"status_code": status_code, "output": result})
                     continue
             
         # Return output when success
         if status_code == 200:
             print("[INFO] Plan succesfully executed")
-            logger.add_message("Plan executed", "Success")
+            logger.add_message("Final: Sucessful. Plan executed", "Success")
             temp_out = result # temp
 
             # Return result to client
@@ -195,7 +195,7 @@ def query_wayang(describe_wayang_plan: str) -> str:
         # If failed to execute plan after debugging
         if status_code != 200:
             print(f"[ERROR] Couldn't execute plan succesfully, status {status_code}")
-            logger.add_message("Plan executed unsucessful", {"status_code": status_code, "output": result})
+            logger.add_message("Final: Unsucessful. Plan executed unsucessful", {"status_code": status_code, "output": result})
             
             # Return failure to client
             return "Couldn't execute wayang plan succesfully"
