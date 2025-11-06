@@ -1,2 +1,2 @@
-# AI_Wayang_Multi
-A multi agent architecture to execute Wayang Plans based on natural language queries
+# AI-Wayang-Multi
+A multi agentic architecture for Apache Wayang converting natural language to Wayang JSON-plans.

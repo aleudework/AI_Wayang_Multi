@@ -1,0 +1,150 @@
+** User query: **
+Show me all the person names that have at least two adresses. Output in textfile
+
+** Wayang Plan: **
+{
+                "context": {
+                    "platforms": [
+                        "java"
+                    ],
+                    "configuration": {}
+                },
+                "operators": [
+                    {
+                        "id": 1,
+                        "cat": "input",
+                        "input": [],
+                        "output": [
+                            2
+                        ],
+                        "operatorName": "jdbcRemoteInput",
+                        "data": {
+                            "uri": "jdbc:postgresql://localhost:5432/master_thesis_db",
+                            "username": "master_thesis",
+                            "password": "master",
+                            "table": "(SELECT person_id FROM adresse_test) as X",
+                            "columnNames": [
+                                "person_id"
+                            ]
+                        }
+                    },
+                    {
+                        "id": 2,
+                        "cat": "unary",
+                        "input": [
+                            1
+                        ],
+                        "output": [
+                            3
+                        ],
+                        "operatorName": "map",
+                        "data": {
+                            "udf": "(r: org.apache.wayang.basic.data.Record) => (r.getField(0).asInstanceOf[Int], 1)"
+                        }
+                    },
+                    {
+                        "id": 3,
+                        "cat": "unary",
+                        "input": [
+                            2
+                        ],
+                        "output": [
+                            4
+                        ],
+                        "operatorName": "reduceBy",
+                        "data": {
+                            "keyUdf": "(t: (Int, Int)) => t._1",
+                            "udf": "(a: (Int, Int), b: (Int, Int)) => (a._1, a._2 + b._2)"
+                        }
+                    },
+                    {
+                        "id": 4,
+                        "cat": "unary",
+                        "input": [
+                            3
+                        ],
+                        "output": [
+                            5
+                        ],
+                        "operatorName": "filter",
+                        "data": {
+                            "udf": "(t: (Int, Int)) => t._2 >= 2"
+                        }
+                    },
+                    {
+                        "id": 5,
+                        "cat": "unary",
+                        "input": [
+                            4
+                        ],
+                        "output": [
+                            7
+                        ],
+                        "operatorName": "map",
+                        "data": {
+                            "udf": "(t: (Int, Int)) => t._1"
+                        }
+                    },
+                    {
+                        "id": 6,
+                        "cat": "input",
+                        "input": [],
+                        "output": [
+                            7
+                        ],
+                        "operatorName": "jdbcRemoteInput",
+                        "data": {
+                            "uri": "jdbc:postgresql://localhost:5432/master_thesis_db",
+                            "username": "master_thesis",
+                            "password": "master",
+                            "table": "(SELECT id, navn FROM person_test) as X",
+                            "columnNames": [
+                                "id",
+                                "navn"
+                            ]
+                        }
+                    },
+                    {
+                        "id": 7,
+                        "cat": "binary",
+                        "input": [
+                            5,
+                            6
+                        ],
+                        "output": [
+                            8
+                        ],
+                        "operatorName": "join",
+                        "data": {
+                            "thisKeyUdf": "(pid: Int) => pid",
+                            "thatKeyUdf": "(r: org.apache.wayang.basic.data.Record) => r.getField(0)"
+                        }
+                    },
+                    {
+                        "id": 8,
+                        "cat": "unary",
+                        "input": [
+                            7
+                        ],
+                        "output": [
+                            9
+                        ],
+                        "operatorName": "map",
+                        "data": {
+                            "udf": "(t: (Int, org.apache.wayang.basic.data.Record)) => t._2.getField(1).toString"
+                        }
+                    },
+                    {
+                        "id": 9,
+                        "cat": "output",
+                        "input": [
+                            8
+                        ],
+                        "output": [],
+                        "operatorName": "textFileOutput",
+                        "data": {
+                            "filename": "file:///Users/alexander/Pa%CC%8A%20min%20Mac/Data/Wayang/Output/output_20251105_171418.txt"
+                        }
+                    }
+                ]
+            }

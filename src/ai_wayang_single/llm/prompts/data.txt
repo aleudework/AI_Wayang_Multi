@@ -1,0 +1,33 @@
+## Data Definition (Available Data Sources)
+
+You can only use the following **tables** or **textfiles** as data sources.  
+Each table contains a set of **columns** with defined meanings.
+For each column, you will get the column name, the data type and two random examples in the column
+When generating a plan, always reference tables and columns **exactly as defined below**.
+
+For each textfile you get the name of the textfile **always refer to the textfiles by its exact file name. No file extentions
+
+For each table and text files, there is sometimes provided a description to better understand the meaning and use of table
+
+---
+### **Tables** 
+
+{jdbc_tables}
+
+### **Text files**
+
+{text_files}
+
+### Important Notes for Input Text files
+Remember that Wayang always reads text files line by line. Pay close attention to the user's query, as you may need
+a flatMap or another unary function following to split, so you get words instead of lines.
+
+---
+
+### General Notes
+- Always reference column names in tables **exactly** as shown (case-sensitive).  
+- Tables are the **input sources** used in operations.  
+- When defining a plan step, refer to the correct table name and its columns.
+- Do not invent new tables or columns that are not listed here.  
+- When using a text file, always refer to the correct file name
+- Text files are loaded line by line

@@ -1,0 +1,87 @@
+** User query: **
+In the file names I have a couple of first names. In the person tables I have full names. Try to match their first names their with the ones that can be found in the textfile names and return these names as a textfile
+
+** Wayang Plan: **
+{
+  "context": {
+    "platforms": ["java"],
+    "configuration": {}
+  },
+  "operators": [
+    {
+      "id": 1,
+      "cat": "input",
+      "input": [],
+      "output": [2],
+      "operatorName": "textFileInput",
+      "data": {
+        "filename": "file:///Users/alexander/Wayang_Data/Input/names.txt"
+      }
+    },
+    {
+      "id": 2,
+      "cat": "unary",
+      "input": [1],
+      "output": [3],
+      "operatorName": "flatMap",
+      "data": {
+        "udf": "(line: String) => line.toLowerCase.split(\"[^a-zæøå]+\").filter(_.nonEmpty).toSeq"
+      }
+    },
+    {
+      "id": 3,
+      "cat": "input",
+      "input": [],
+      "output": [4],
+      "operatorName": "jdbcRemoteInput",
+      "data": {
+        "uri": "jdbc:postgresql://localhost:5432/master_thesis_db",
+        "username": "master_thesis",
+        "password": "master",
+        "table": "(SELECT id, navn FROM person_test) as X",
+        "columnNames": ["id", "navn"]
+      }
+    },
+    {
+      "id": 4,
+      "cat": "unary",
+      "input": [3],
+      "output": [5],
+      "operatorName": "map",
+      "data": {
+        "udf": "(r: org.apache.wayang.basic.data.Record) => { val navn = r.getField(1).toString.toLowerCase.trim; val parts = if (navn.isEmpty) Array[String]() else navn.split(\"\\\\s+\"); val first = if (parts.nonEmpty) parts(0) else navn; (first, navn) }"
+      }
+    },
+    {
+      "id": 5,
+      "cat": "binary",
+      "input": [2, 4],
+      "output": [6],
+      "operatorName": "join",
+      "data": {
+        "thisKeyUdf": "(word: String) => word",
+        "thatKeyUdf": "(t: (String, String)) => t._1"
+      }
+    },
+    {
+      "id": 6,
+      "cat": "unary",
+      "input": [5],
+      "output": [7],
+      "operatorName": "map",
+      "data": {
+        "udf": "(t: (String, (String, String))) => t._2._2"
+      }
+    },
+    {
+      "id": 7,
+      "cat": "output",
+      "input": [6],
+      "output": [],
+      "operatorName": "textFileOutput",
+      "data": {
+        "filename": "file:///Users/alexander/Wayang_Data/Output/output_wordmatch.txt"
+      }
+    }
+  ]
+}

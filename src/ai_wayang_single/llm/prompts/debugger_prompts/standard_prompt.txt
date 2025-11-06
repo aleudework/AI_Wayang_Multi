@@ -1,0 +1,13 @@
+This is the Wayang JSON plan to fix:
+
+{failed_plan}
+
+If error comes from Wayang server, this is the error message:
+
+{wayang_error}
+
+If error is an validation error, this is the validation errors:
+
+{val_errors}
+
+Correct the plan. As told in tour system instructions. Remember to describe your reasoning of what you have fixed and why in the thoughts variable

@@ -1,0 +1,216 @@
+** User query: **
+Return all the persons who are living at their same postal codes. Return in textfile. Return both their postal codes, names and ages
+
+** Wayang Plan: **
+{
+                "context": {
+                    "platforms": [
+                        "java"
+                    ],
+                    "configuration": {}
+                },
+                "operators": [
+                    {
+                        "id": 1,
+                        "cat": "input",
+                        "input": [],
+                        "output": [
+                            2
+                        ],
+                        "operatorName": "jdbcRemoteInput",
+                        "data": {
+                            "uri": "jdbc:postgresql://localhost:5432/master_thesis_db",
+                            "username": "master_thesis",
+                            "password": "master",
+                            "table": "(SELECT person_id, postnummer FROM (SELECT person_id, postnummer FROM adresse_test) as X) as X",
+                            "columnNames": [
+                                "person_id",
+                                "postnummer"
+                            ]
+                        }
+                    },
+                    {
+                        "id": 2,
+                        "cat": "unary",
+                        "input": [
+                            1
+                        ],
+                        "output": [
+                            3
+                        ],
+                        "operatorName": "map",
+                        "data": {
+                            "udf": "(r: org.apache.wayang.basic.data.Record) => (r.getField(1).toString, 1)"
+                        }
+                    },
+                    {
+                        "id": 3,
+                        "cat": "unary",
+                        "input": [
+                            2
+                        ],
+                        "output": [
+                            4
+                        ],
+                        "operatorName": "reduceBy",
+                        "data": {
+                            "keyUdf": "(t: (String, Int)) => t._1",
+                            "udf": "(a: (String, Int), b: (String, Int)) => (a._1, a._2 + b._2)"
+                        }
+                    },
+                    {
+                        "id": 4,
+                        "cat": "unary",
+                        "input": [
+                            3
+                        ],
+                        "output": [
+                            5
+                        ],
+                        "operatorName": "filter",
+                        "data": {
+                            "udf": "(t: (String, Int)) => t._2 >= 2"
+                        }
+                    },
+                    {
+                        "id": 5,
+                        "cat": "unary",
+                        "input": [
+                            4
+                        ],
+                        "output": [
+                            8
+                        ],
+                        "operatorName": "map",
+                        "data": {
+                            "udf": "(t: (String, Int)) => t._1"
+                        }
+                    },
+                    {
+                        "id": 6,
+                        "cat": "input",
+                        "input": [],
+                        "output": [
+                            7
+                        ],
+                        "operatorName": "jdbcRemoteInput",
+                        "data": {
+                            "uri": "jdbc:postgresql://localhost:5432/master_thesis_db",
+                            "username": "master_thesis",
+                            "password": "master",
+                            "table": "(SELECT person_id, postnummer FROM (SELECT person_id, postnummer FROM adresse_test) as X) as X",
+                            "columnNames": [
+                                "person_id",
+                                "postnummer"
+                            ]
+                        }
+                    },
+                    {
+                        "id": 7,
+                        "cat": "unary",
+                        "input": [
+                            6
+                        ],
+                        "output": [
+                            8
+                        ],
+                        "operatorName": "map",
+                        "data": {
+                            "udf": "(r: org.apache.wayang.basic.data.Record) => (r.getField(1).toString, r.getField(0).asInstanceOf[Int])"
+                        }
+                    },
+                    {
+                        "id": 8,
+                        "cat": "binary",
+                        "input": [
+                            5,
+                            7
+                        ],
+                        "output": [
+                            9
+                        ],
+                        "operatorName": "join",
+                        "data": {
+                            "thisKeyUdf": "(p: String) => p",
+                            "thatKeyUdf": "(t: (String, Int)) => t._1"
+                        }
+                    },
+                    {
+                        "id": 9,
+                        "cat": "unary",
+                        "input": [
+                            8
+                        ],
+                        "output": [
+                            11
+                        ],
+                        "operatorName": "map",
+                        "data": {
+                            "udf": "(t: (String, (String, Int))) => (t._2._2, t._1)"
+                        }
+                    },
+                    {
+                        "id": 10,
+                        "cat": "input",
+                        "input": [],
+                        "output": [
+                            11
+                        ],
+                        "operatorName": "jdbcRemoteInput",
+                        "data": {
+                            "uri": "jdbc:postgresql://localhost:5432/master_thesis_db",
+                            "username": "master_thesis",
+                            "password": "master",
+                            "table": "(SELECT id, navn, alder FROM (SELECT id, navn, alder FROM person_test) as X) as X",
+                            "columnNames": [
+                                "id",
+                                "navn",
+                                "alder"
+                            ]
+                        }
+                    },
+                    {
+                        "id": 11,
+                        "cat": "binary",
+                        "input": [
+                            9,
+                            10
+                        ],
+                        "output": [
+                            12
+                        ],
+                        "operatorName": "join",
+                        "data": {
+                            "thisKeyUdf": "(p: (Int, String)) => p._1",
+                            "thatKeyUdf": "(r: org.apache.wayang.basic.data.Record) => r.getField(0).asInstanceOf[Int]"
+                        }
+                    },
+                    {
+                        "id": 12,
+                        "cat": "unary",
+                        "input": [
+                            11
+                        ],
+                        "output": [
+                            13
+                        ],
+                        "operatorName": "map",
+                        "data": {
+                            "udf": "(t: ((Int, String), org.apache.wayang.basic.data.Record)) => { val post = t._1._2; val rec = t._2; val navn = rec.getField(1).toString; val alder = rec.getField(2).asInstanceOf[Int]; s\"${post} | ${navn} | ${alder}\" }"
+                        }
+                    },
+                    {
+                        "id": 13,
+                        "cat": "output",
+                        "input": [
+                            12
+                        ],
+                        "output": [],
+                        "operatorName": "textFileOutput",
+                        "data": {
+                            "filename": "file:///Users/alexander/Wayang_Data/Output/output_20251105_214429.txt"
+                        }
+                    }
+                ]
+            }
+        

@@ -1,0 +1,103 @@
+** User query: **
+Show me the person who has the longest last name, including their age and full address.
+
+
+** Wayang Plan: **
+{
+  "context": {
+    "platforms": ["java"],
+    "configuration": {}
+  },
+  "operators": [
+    {
+      "id": 1,
+      "cat": "input",
+      "input": [],
+      "output": [2],
+      "operatorName": "jdbcRemoteInput",
+      "data": {
+        "uri": "jdbc:postgresql://localhost:5432/master_thesis_db",
+        "username": "master_thesis",
+        "password": "master",
+        "table": "(SELECT id, navn, alder FROM person_test) as X",
+        "columnNames": ["id", "navn", "alder"]
+      }
+    },
+    {
+      "id": 2,
+      "cat": "unary",
+      "input": [1],
+      "output": [3],
+      "operatorName": "map",
+      "data": {
+        "udf": "(r: org.apache.wayang.basic.data.Record) => { val id = r.getField(0).asInstanceOf[Int]; val navn = r.getField(1).toString.trim; val alder = r.getField(2).asInstanceOf[Int]; val parts = if (navn.isEmpty) Array[String]() else navn.split(\"\\\\s+\"); val last = if (parts.isEmpty) \"\" else parts(parts.length - 1); (id, navn, alder, last.length) }"
+      }
+    },
+    {
+      "id": 3,
+      "cat": "unary",
+      "input": [2],
+      "output": [4],
+      "operatorName": "reduce",
+      "data": {
+        "keyUdf": "(_ : Any) => 1",
+        "udf": "(a: (Int, String, Int, Int), b: (Int, String, Int, Int)) => if (a._4 >= b._4) a else b"
+      }
+    },
+    {
+    "id": 4,
+    "cat": "unary",
+    "input": [3],
+    "output": [5],
+    "operatorName": "flatMap",
+    "data": {
+        "udf": "(p: (Int, String, Int, Int)) => Seq(p)"
+    }
+    },
+    {
+      "id": 6,
+      "cat": "input",
+      "input": [],
+      "output": [7],
+      "operatorName": "jdbcRemoteInput",
+      "data": {
+        "uri": "jdbc:postgresql://localhost:5432/master_thesis_db",
+        "username": "master_thesis",
+        "password": "master",
+        "table": "(SELECT person_id, vejnavn, postnummer, by FROM adresse_test) as X",
+        "columnNames": ["person_id", "vejnavn", "postnummer", "by"]
+      }
+    },
+    {
+      "id": 7,
+      "cat": "unary",
+      "input": [6],
+      "output": [8],
+      "operatorName": "map",
+      "data": {
+        "udf": "(r: org.apache.wayang.basic.data.Record) => (r.getField(0).asInstanceOf[Int], r.getField(1).toString, r.getField(2).toString, r.getField(3).toString)"
+      }
+    },
+    {
+      "id": 8,
+      "cat": "binary",
+      "input": [4, 7],
+      "output": [9],
+      "operatorName": "join",
+      "data": {
+        "thisKeyUdf": "(p: (Int, String, Int, Int)) => p._1",
+        "thatKeyUdf": "(a: (Int, String, String, String)) => a._1"
+      }
+    },
+    {
+      "id": 9,
+      "cat": "unary",
+      "input": [8],
+      "output": [],
+      "operatorName": "map",
+      "data": {
+        "udf": "(t: ((Int, String, Int, Int), (Int, String, String, String))) => { val p = t._1; val a = t._2; val address = s\"${a._2} ${a._3} ${a._4}\"; s\"${p._2} | ${p._3} | ${address}\" }"
+      }
+    }
+  ]
+}
