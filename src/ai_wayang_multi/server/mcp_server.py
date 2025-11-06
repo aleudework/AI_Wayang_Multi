@@ -105,7 +105,7 @@ def query_wayang(describe_wayang_plan: str) -> str:
         else:
             # Logging if validation fails
             print(f"[INFO] Plan {version} failed validation: {val_errors}")
-            logger.add_message(f"Err: Val error. Failed validation", {"version": version, "errors": val_errors})
+            logger.add_message(f"Err: PlanValidator Val error. Failed validation", {"version": version, "errors": val_errors})
             status_code = 400
 
 
@@ -178,7 +178,7 @@ def query_wayang(describe_wayang_plan: str) -> str:
                 if not val_success:
                     # Logging failure
                     print(f"[INFO] Plan {version} failed validation: {val_errors}")
-                    logger.add_message(f"Err: Val error. Failed validation", {"version": version, "errors": val_errors})
+                    logger.add_message(f"Err: PlanValidator Val error. Failed validation", {"version": version, "errors": val_errors})
                     status_code = 400
                     result = None
                     continue
