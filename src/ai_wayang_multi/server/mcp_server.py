@@ -56,7 +56,7 @@ def query_wayang(describe_wayang_plan: str) -> str:
     try:
         # Set up logger 
         logger = Logger()
-        logger.add_message("Plan description from client LLM", describe_wayang_plan)
+        logger.add_message("User query: Plan description from client LLM", describe_wayang_plan)
         
         # Initialize variables
         status_code = None # Status code from validator or Wayang server
@@ -259,6 +259,7 @@ def load_schemas() -> str:
         return f"An error occured, error: {e}"
 
 
+# TEMP
 # Test MCP
 @mcp.tool()
 def greeto(name: str) -> str:
@@ -281,6 +282,6 @@ def execute_wayang_plan(plan_file_path: str) -> str:
     print("Response body:", res.text)
     
     if res.status_code != 200:
-        return f"Fejl {res.status_code}: {res.text}"
+        return f"Error: {res.status_code}: {res.text}"
 
     return res.text
