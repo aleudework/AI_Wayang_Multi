@@ -7,7 +7,7 @@ from pathlib import Path
 # Add src folder so modules can be found
 sys.path.append(str(Path(__file__).resolve().parent / "src"))
 
-from src.ai_wayang_single.server.mcp_server import mcp
+from src.ai_wayang_multi.server.mcp_server import mcp
 
 def main():
     """
