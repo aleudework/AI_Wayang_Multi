@@ -1,13 +1,25 @@
-This is the Wayang JSON plan to fix:
+An error occured in the builded and/or fixed Wayang Plan.
+
+Here is the failed Wayang JSON plan that should be fixed:
 
 {failed_plan}
 
-If error comes from Wayang server, this is the error message:
+---
+Here is the original natural-language request of what the plan should do:
 
-{wayang_error}
+{query}
 
-If error is an validation error, this is the validation errors:
+---
+This is the error from the Wayang server, if the error is an execution error on the Wayang server:
 
-{val_errors}
+{wayang_error} 
 
-Correct the plan. As told in tour system instructions. Remember to describe your reasoning of what you have fixed and why in the thoughts variable
+This is the validation error, if the validation of the plan failed:
+
+{val_error}
+
+---
+
+Your goal is to interpret the Wayang or Validation error. Correct the failed Wayang Plan and output a new and fixed JSON Wayang Plan that can be executed correctly. Carefully review the whole conversation to see previous errors and previous fixes to the plan.
+
+Your outputted plan may or may not be given to a Refiner Agent that will refine any inconsitency that you make. 

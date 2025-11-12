@@ -1,8 +1,6 @@
 from openai import OpenAI
-import re
-import json
 from typing import List
-from ai_wayang_multi.config.settings import DEBUGGER_MODEL_CONFIG
+from ai_wayang_multi.config.settings import DEBUGGER_AGENT_CONFIG
 from ai_wayang_multi.llm.prompt_loader import PromptLoader
 from ai_wayang_multi.llm.models import WayangPlan
 
@@ -16,7 +14,7 @@ class Debugger:
 
     def __init__(self, model: str | None = None, system_prompt: str | None = None, version: int | None = None):
         self.client = OpenAI()
-        self.model = model or DEBUGGER_MODEL_CONFIG.get("model")
+        self.model = model or DEBUGGER_AGENT_CONFIG.get("model")
         self.system_prompt = system_prompt or PromptLoader().load_builder_system_prompt()
         self.version = version or 0
         self.chat = []
@@ -82,7 +80,7 @@ class Debugger:
         }
 
         # Initialize effort
-        effort = DEBUGGER_MODEL_CONFIG.get("reason_effort")
+        effort = DEBUGGER_AGENT_CONFIG.get("reason_effort")
         if effort:
             params["reasoning"] = {"effort": effort}
 

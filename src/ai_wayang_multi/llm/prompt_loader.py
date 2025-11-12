@@ -2,7 +2,7 @@ from pathlib import Path
 import os
 import json
 from typing import List, Dict
-from ai_wayang_multi.llm.models import WayangPlan
+from ai_wayang_multi.llm.models import WayangPlan, Step
 
 
 class PromptLoader:
@@ -10,13 +10,78 @@ class PromptLoader:
     Loads and prepares prompts for agents
 
     """
-    def __init__(self, prompt_folder: str | None = None, data_folder: str | None = None):
+    def __init__(self):
         self.prompt_folder = Path(__file__).resolve().parent / "prompts"
         self.data_folder = Path(__file__).resolve().parent.parent.parent.parent / "data"
     
-    def load_builder_system_prompt(self) -> str:
+    ### System prompt loaders
+    def load_specifier_system_prompt(self) -> str:
+        """
+        Load system prompt
+
+        Returns:
+            (str): system prompt
+        """
+
+        # Get system prompt template
+        system_prompt = self._read_file(self.prompt_folder, "specifier_prompts/system_prompt.txt")
+
+        # Get general prompt templates
+        data_prompt = self.load_data_prompt()
+
+        # Fill system prompt template
+        system_prompt = system_prompt.replace("{data}", data_prompt)
+
+        return system_prompt
+    
+    
+    def load_planner_system_prompt(self) -> str:
+        """
+        Load system prompt
+        
+        Returns:
+            (str): system prompt
+        """
+
+        system_prompt = self._read_file(self.prompt_folder, "planner_prompts/system_prompt.txt")
+        operator_prompt = self.load_operators()
+        few_shot_prompt = self.load_few_shot_prompt()
+
+        system_prompt = system_prompt.replace("{operators}", operator_prompt)
+        system_prompt = system_prompt.replace("{examples}", few_shot_prompt)
+
+        return system_prompt
+    
+    
+    def load_planner_prompt(self, query: str, data_sources: dict) -> str:
+        """
+        Load prompt for Planner Agent
+
+        Args:
+            query (str): The detailed query description of the WayangPlan
+            data_sources (dict): The dictionary with lists of the selected data 
+        
+        Returns:
+            (str): The formatted prompt
+        """
+
+        prompt_template = self._read_file(self.prompt_folder, "planner_prompts/standard_prompt.txt")
+
+        selected_data_prompt = self.load_selected_data_prompt(data_sources)
+
+        prompt_template = prompt_template.replace("{query}", query)
+        prompt_template = prompt_template.replace("{selected_data_prompt}", selected_data_prompt)
+
+        return prompt_template
+    
+
+    def load_builder_system_prompt(self, query, selected_data) -> str:
         """
         Load and prepare system prompt for Builder Agent
+
+        Args:
+            query (str): The query (refined) of the plan to be built
+            selected_data (dict): The data sources to be used selected by Specifier Agent
 
         Returns:
             (str): Builder's system prompt
@@ -28,17 +93,50 @@ class PromptLoader:
         important_notes = self._read_file(self.prompt_folder, "builder_prompts/important_notes.txt")
         
         # Get general prompt templates
-        data_prompt = self.load_data_prompt()
+        data_prompt = self.load_selected_data_prompt(selected_data)
         operator_prompt = self.load_operators()
         few_shot_prompt = self.load_few_shot_prompt()
 
         # Fill system prompt template
-        system_prompt = system_prompt.replace("{data}", data_prompt)
+        system_prompt = system_prompt.replace("{selected_data}", data_prompt)
         system_prompt = system_prompt.replace("{operators}", operator_prompt)
         system_prompt = system_prompt.replace("{examples}", few_shot_prompt)
         system_prompt = system_prompt.replace("{important}", important_notes)
+        system_prompt = system_prompt.replace("{query}", query)
 
         return system_prompt
+    
+    
+    def load_builder_prompt(self, step: Step) -> str:
+        """
+        Load standard prompt for Builder Agent
+
+        Args:
+            step (Step): The step to be filled into the prompt
+
+        Returns.
+            (str): Prompt filled
+
+        """
+
+        prompt = self._read_file(self.prompt_folder, "builder_prompts/standard_prompt.txt")
+
+        step_json = step.model_dump_json(indent=2)
+
+        prompt = prompt.replace("{step}", step_json)
+
+        return prompt
+    
+
+    
+    def load_refiner_system_prompt(self) -> str:
+        """
+        Load system prompt
+
+        Returns:
+            (str): system prompt
+        """
+        return
     
 
     def load_debugger_system_prompt(self) -> str:
@@ -132,6 +230,57 @@ class PromptLoader:
         # Return prompt
         return answer_prompt
     
+
+    def load_selected_data_prompt(self, selected_data: dict) -> str:
+        """
+        Loads selected data prompt with schemas in it
+        """
+
+        # Load data prompt template
+        data_prompt = self._read_file(self.prompt_folder, "data.txt")
+
+        # Load all schemas
+        schemas = self._load_schemas()
+
+        tables_schemas = schemas.get("tables", [])
+        textfiles_schemas = schemas.get("text_files", [])
+
+        sel_tables = selected_data.get("tables") or []
+        sel_textfiles = selected_data.get("textfiles") or []
+
+        sel_table_schemas = []
+        sel_textfile_schemas = []
+
+        # --- TABLES ---
+        for table_schema in tables_schemas:
+            if isinstance(table_schema, str):
+                table_schema = json.loads(table_schema)
+
+            # schema har én nøgle: tabelnavnet
+            schema_table_name = next(iter(table_schema.keys()))
+
+            if schema_table_name in sel_tables:
+                sel_table_schemas.append(json.dumps(table_schema, ensure_ascii=False, indent=2))
+
+        # --- TEXT FILES ---
+        for text_schema in textfiles_schemas:
+            if isinstance(text_schema, str):
+                text_schema = json.loads(text_schema)
+
+            schema_file_name = next(iter(text_schema.keys()))
+
+            if schema_file_name in sel_textfiles:
+                sel_textfile_schemas.append(json.dumps(text_schema, ensure_ascii=False, indent=2))
+
+        # Format as strings
+        tables_str = "\n\n".join(sel_table_schemas)
+        textfiles_str = "\n\n".join(sel_textfile_schemas)
+
+        # Insert into template
+        data_prompt = data_prompt.replace("{jdbc_tables}", tables_str)
+        data_prompt = data_prompt.replace("{text_files}", textfiles_str)
+
+        return data_prompt
 
     
     def load_data_prompt(self) -> str:

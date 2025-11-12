@@ -1,6 +1,8 @@
 # Import libraries
 from mcp.server.fastmcp import FastMCP
-from ai_wayang_multi.config.settings import MCP_CONFIG, INPUT_CONFIG, OUTPUT_CONFIG, DEBUGGER_MODEL_CONFIG
+from ai_wayang_multi.config.settings import MCP_CONFIG, INPUT_CONFIG, OUTPUT_CONFIG, DEBUGGER_AGENT_CONFIG
+from ai_wayang_multi.llm.agent_specifier import Specifier
+from ai_wayang_multi.llm.agent_planner import Planner
 from ai_wayang_multi.llm.agent_builder import Builder
 from ai_wayang_multi.llm.agent_debugger import Debugger
 from ai_wayang_multi.wayang.plan_mapper import PlanMapper
@@ -22,6 +24,8 @@ config = {
 }
 
 # Initialize agents and objects
+specifier_agent = Specifier() # Initialize specifier agent
+planner_agent = Planner() # Initialize planner agent
 builder_agent = Builder() # Initialize builder agent
 debugger_agent = Debugger() # Initialize debugger agent
 plan_mapper = PlanMapper(config=config) # Initialize mapper
@@ -63,6 +67,60 @@ def query_wayang(describe_wayang_plan: str) -> str:
         result = None # Variable to store output
         version = 1 # Keeping track of plan version for this session
 
+        ### --- Select data sources and elaborate on query --- ###
+        
+        response = specifier_agent.generate(describe_wayang_plan)
+        output = response.get("response")
+
+        print("[INFO] SpecifierAgent: Query elaborated and data sources selected")
+        logger.add_message("Agent Usage: SpecifierAgent Information", {"model": str(response["raw"].model), "usage": response["raw"].usage.model_dump()})
+        logger.add_message("Agent: SpecifierAgent Output", output.model_dump())
+
+        refined_query = output.refined_query
+
+        data_sources = {
+            "tables": output.selected_sources.tables,
+            "textfiles": output.selected_sources.textfiles
+        }
+
+        ### --- Generate Abstract Wayang Plan --- ###
+
+        planner_agent.start()
+
+        response = planner_agent.generate(refined_query, data_sources)
+
+        abstract_plan = response.get("abstract_plan")
+
+        steps = sorted(abstract_plan.steps, key=lambda s: s.step_id)
+
+        print("[INFO] PlannerAgent: Abstract Plan generated")
+        logger.add_message("Agent Usage: PlannerAgent Information", {"model": str(response["raw"].model), "usage": response["raw"].usage.model_dump()})
+        logger.add_message("Agent: PlannerAgent Output", abstract_plan.model_dump())   
+
+        ### --- Build Wayang Plan --- ###
+
+        # Plan variable to append
+
+        raw_plan = []
+
+        builder_agent.start(refined_query, data_sources)
+
+        for i, step in enumerate(steps):
+
+            # Prompt
+            # Answer
+            # Add to raw_plan
+            # Add answer to builder
+
+        # Sort by id"
+
+        ### --- Refine Wayang Plan --- ###
+
+        ### --- Map Wayang Plan --- ###
+
+        ### --- Validate Wayang Plan --- ###
+
+        return None 
 
         ### --- Generate Wayang Plan Draft --- ###
 

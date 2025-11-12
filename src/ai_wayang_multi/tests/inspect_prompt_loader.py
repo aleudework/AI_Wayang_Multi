@@ -3,6 +3,8 @@ from ai_wayang_multi.llm.prompt_loader import PromptLoader
 
 pl = PromptLoader()
 
-print(pl.load_few_shot_prompt())
+d = {"tables": ["adresse_test"], "text_files": ["names", "postal_codes"]}
 
-print(pl.load_builder_system_prompt())
+j = pl.load_selected_data_prompt(d)
+
+print(j)

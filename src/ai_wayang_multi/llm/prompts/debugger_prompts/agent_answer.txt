@@ -1,7 +1,8 @@
-Here is the fixed Wayang Plan
+## My fixed Wayang Plan:
 
 {fixed plan}
 
-My reasoning on the fixes I did are:
+---
+## My reasoning on the errors and my fix:
 
 {thoughts}

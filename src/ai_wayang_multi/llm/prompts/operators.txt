@@ -1,21 +1,12 @@
 ## Operators Definition (for Apache Wayang plan generation)
 
-All operators represent transformation steps in a Wayang plan.  
-They are divided into three categories: **Input Operators**, **Unary Operators**, and **Binary Operators**.
-
-Each operator must include the following base fields:
-- **id** — Unique integer identifier for the operation (sequential number in the plan).  
-- **input** — The `id` of the operator that provides its input data.  
-- **output** — The `id` of the operator that receives its output data.  
-
-
-Always remember to start the first operation (input operation) with id = 1 (not 0)
+The given operators are all available operators.
 
 ---
 
 ## 1. Input Operators
 
-An input operator always have zero input but one to more outputs
+An input operator always have **zero input** but **one or more outputs**.
 
 ### **jdbcRemoteInput**
 - **Description:** Reads data from a database table using a JDBC connection.  
@@ -29,8 +20,8 @@ An input operator always have zero input but one to more outputs
   - `output`: ID of the next operator or operators if more uses it for input
 
   ### **TextFileInput**
-  - **Description:** Reads data line by line from a textfile
-  - **Use when:** You need to load data from a textfile.
+  - **Description:** Reads data line by line from a text file
+  - **Use when:** You need to load data from a text file.
   - **Fields:**
     - `cat`: `"input"`  
     - `operatorName`: `"textFileInput"`  
@@ -43,40 +34,41 @@ An input operator always have zero input but one to more outputs
 ## 2. Unary Operators
 
 You can choose from the following **unary data transformation operations**.  
-Each operator consumes a single input dataset and produces a single output dataset.
-You can not have more than one output ids in unary operators.
+Each operator consumes only a **single input** dataset and produces a **single output** dataset.
+
+You cannot have more than one output ids in unary operators.
 
 ---
 
 ### **Map**
-- **Description:** Apply a function to each element (1 input → 1 output).  
+- **Description:** Apply a function to each element (1 input => 1 output).  
 - **Use when:** You need to transform data element-wise, e.g. compute new values or change structure.  
 - **Fields:**
   - `cat`: `"unary"`  
   - `operatorName`: `"map"`  
-  - `UDF`: Scala lambda function applied to each element  
+  - `udf`: Scala lambda function applied to each element  
   - `id`, `input`, `output`
 
 ---
 
 ### **FlatMap**
-- **Description:** Apply a function that can return zero, one, or many elements (1 input → 0..n outputs).  
+- **Description:** Apply a function that can return zero, one, or many elements (1 input => 0..n outputs).  
 - **Use when:** Expanding or exploding data, e.g. splitting lists or strings.  
 - **Fields:**  
   - `cat`: `"unary"`  
   - `operatorName`: `"flatMap"`  
-  - `UDF`: Scala lambda function returning a list or sequence  
+  - `udf`: Scala lambda function returning a list or sequence  
   - `id`, `input`, `output`
 
 ---
 
 ### **Filter**
-- **Description:** Keep only elements that satisfy a Boolean condition.  
+- **Description:** Keep only elements that satisfy a boolean condition.  
 - **Use when:** Removing unwanted elements.  
 - **Fields:**  
   - `cat`: `"unary"`  
   - `operatorName`: `"filter"`  
-  - `UDF`: Scala lambda predicate function returning Boolean  
+  - `udf`: Scala lambda predicate function returning boolean  
   - `id`, `input`, `output`
 
 ---
@@ -87,7 +79,7 @@ You can not have more than one output ids in unary operators.
 - **Fields:**  
   - `cat`: `"unary"`  
   - `operatorName`: `"reduce"`  
-  - `UDF`: Scala binary reduction function  
+  - `udf`: Scala binary reduction function  
   - `id`, `input`, `output`
 
 ---
@@ -98,8 +90,8 @@ You can not have more than one output ids in unary operators.
 - **Fields:**  
   - `cat`: `"unary"`  
   - `operatorName`: `"reduceBy"`  
-  - `KeyUDF`: Scala key extraction function  
-  - `UDF`: Scala lambda reduction function per group  
+  - `keyUdf`: Scala key extraction function  
+  - `udf`: Scala lambda reduction function per group  
   - `id`, `input`, `output`
 
 ---
@@ -110,7 +102,7 @@ You can not have more than one output ids in unary operators.
 - **Fields:**  
   - `cat`: `"unary"`  
   - `operatorName`: `"groupBy"`  
-  - `KeyUDF`: Scala key extraction function  
+  - `keyUdf`: Scala key extraction function  
   - `id`, `input`, `output`
 
 ---
@@ -121,52 +113,39 @@ You can not have more than one output ids in unary operators.
 - **Fields:**  
   - `cat`: `"unary"`  
   - `operatorName`: `"sort"`  
-  - `keyUDF`: Scala key function used for ordering  
+  - `keyUdf`: Scala key function used for ordering  
   - `id`, `input`, `output`
 
 ---
 
 ## 3. Binary Operators
 
-
 You can choose from the following **binary data transformation operations**.  
-Each operator consumes two input datasets and produces a single output dataset.
+Each operator consumes always **two input** datasets and produces a **single output** dataset.
 
 ### **Join**
-- **Description:** Joins to datasets together based on their keys.
-- **Use when:** Joining to datasets together. It is an inner-join.
+- **Description:** Joins two datasets together based on their keys.
+- **Use when:** Joining two datasets together. It is an inner-join.
+- **Notes:** Carefully review that you use matching keys.
 - **Fields:**  
   - `cat`: `"binary"`  
   - `operatorName`: `"join"`  
-  - `thisKeyUDF`: Scala key extraction function  
-  - `thatKeyUDF`: Scala key extraction function  
+  - `thisKeyUdf`: Scala key extraction function  
+  - `thatKeyUdf`: Scala key extraction function  
   - `id`, `input`, `output`
-
 
 ---
 
-
 ## 4. Output Operators
 
-An output operator only have a sinlge input and zero output
-Only use output operators if explicity asked for it. Otherwise the last operation in the plan is automatically the output and have an empty []
+An output operator only have a **sinlge input** dataset and **zero output**
+Only use output operators if explicity asked for it. Otherwise the last operation in the plan is automatically the output and have an empty [].
 
 ### **textFileOutput**
-- **Description:** Return data in a textfile or .txt file
+- **Description:** Return data in a text file or .txt file
 - **Use when:** You are asked to output the plan in a textfile or .txt file  
 - **Fields:**  
   - `cat`: `"output"`  
   - `operatorName`: `"textFileOutput"`  
   - `id`: Unique ID of this operator  
   - `input`: ID of the operator which data should be outputted in a textfile
-  
-
----
-
-
-### General Notes
-- Each operator must define a unique **id**.  
-- The **input** and **output** fields establish the execution flow between operators.  
-- **Binary operators** (e.g. `join`) have **two input references** (`inputLeft`, `inputRight`).  
-- The final JSON output must conform to the **Wayang JSON schema** used by the `text_format` parser.  
-- Keep `OperationName` values **exactly** as listed above.

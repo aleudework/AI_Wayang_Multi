@@ -1,8 +1,0 @@
-## Important Notes:
-
-JDBC input returns data as a org.apache.wayang.basic.data.Record
-You'll need to call (r: org.apache.wayang.basic.data.Record) => {} to get columns in UDF.
-use the getField method in UDF with the position of the column (e.g. Id is at position 0 then r.getField(0))´
-
-An example of a map operation with UDF after JDBC input:
-"udf": "(r: org.apache.wayang.basic.data.Record) => r.getField(0).toString 

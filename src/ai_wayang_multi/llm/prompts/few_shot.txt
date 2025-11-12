@@ -1,12 +1,14 @@
 ## Few-Shot Examples (Training Samples for building Wayang JSON plans)
 
-Below you will find a set of **examples** showing how to go from a **natural language query by a user** to a complete and executable **Wayang plan** in JSON.  
-Each example contains a **user query** and a corresponding **Wayang plan** that demonstrates how the system should correctly construct plans.
+Below you will find a set of **examples** showing **natural-language request** and finalized, executable **JSON Wayang Plans** that fulfill the requests.
 
-These examples are meant to **guide** you in how to structure your responses and understand how the input query translates into a valid Wayang plan.
+Each example contains a **request** and a finalized **Wayang Plan** in JSON.
+
+These examples are meant to **guide** you how to correctly structure your response and understand how a natural-langauge requests translates into a valid Wayang plan, and how operators work together.
+
+The content of these requests and data sources used for these plans may not be a part of your available data sources. They are only for illustration.
 
 ---
-
 ### **Examples**
 
 {examples}
@@ -16,7 +18,7 @@ These examples are meant to **guide** you in how to structure your responses and
 ### General Notes
 - Always study the few-shot examples carefully before generating new plans.  
 - The input and output operators don't work necessary for your scenario.
-- Use the provided schemas to determien which data soources and outputs are relevant to your plan
+- Use the provided schemas to determine which data sources and outputs are relevant to your plan
 - The **User Query** shows what the user requested in natural language.  
 - The **Wayang Plan** shows the correct structured plan built from that query.  
 - Follow the logic demonstrated in these examples.  
