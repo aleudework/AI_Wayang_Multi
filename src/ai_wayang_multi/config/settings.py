@@ -16,9 +16,14 @@ SPECIFIER_AGENT_CONFIG =  {
     "reason_effort": os.getenv("SPECIFIER_REASON_EFFORT", None)
 }
 
-PLANNER_AGENT_CONFIG =  {
-    "model": os.getenv("PLANNER_LLM", "gpt-5-nano"),
-    "reason_effort": os.getenv("PLANNER_REASON_EFFORT", None)
+SELECTOR_AGENT_CONFIG =  {
+    "model": os.getenv("SELECTORLLM", "gpt-5-nano"),
+    "reason_effort": os.getenv("SELECTOR_REASON_EFFORT", None)
+}
+
+DECOMPOSER_AGENT_CONFIG =  {
+    "model": os.getenv("DECOMPOSER_LLM", "gpt-5-nano"),
+    "reason_effort": os.getenv("DECOMPOSER_REASON_EFFORT", None)
 }
 
 BUILDER_AGENT_CONFIG = {

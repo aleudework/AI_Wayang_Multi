@@ -21,5 +21,3 @@ This is the validation error, if the validation of the plan failed:
 ---
 
 Your goal is to interpret the Wayang or Validation error. Correct the failed Wayang Plan and output a new and fixed JSON Wayang Plan that can be executed correctly. Carefully review the whole conversation to see previous errors and previous fixes to the plan.
-
-Your outputted plan may or may not be given to a Refiner Agent that will refine any inconsitency that you make. 

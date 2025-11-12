@@ -1,17 +1,18 @@
 from openai import OpenAI
-from ai_wayang_multi.config.settings import SPECIFIER_AGENT_CONFIG
+from ai_wayang_multi.config.settings import DECOMPOSER_AGENT_CONFIG
 from ai_wayang_multi.llm.prompt_loader import PromptLoader
+from ai_wayang_multi.llm.models import DataSources, WayangPlanHighLevel
 
-class Specifier:
+class Decomposer:
         """
-        Agent to rewrite user request in clearly English with relevant specification.
-        
+        Creates an abstract plan from user query and decomposes it into steps for Builder agents
+
         """
 
         def __init__(self, model: str | None = None, system_prompt: str | None = None):
             self.client = OpenAI()
-            self.model = model or SPECIFIER_AGENT_CONFIG.get("model")
-            self.system_prompt = system_prompt or PromptLoader().load_specifier_system_prompt()
+            self.model = model or DECOMPOSER_AGENT_CONFIG.get("model")
+            self.system_prompt = system_prompt or PromptLoader().load_decomposer_system_prompt()
             self.chat = []
 
 
@@ -23,17 +24,21 @@ class Specifier:
             self.chat = [{"role": "system", "content": self.system_prompt}]
 
 
-        def generate(self, prompt: str):
+        def generate(self, query: str, selected_data: DataSources) -> WayangPlanHighLevel:
             """
-            Refine user query and select relevant data sources to generate the plan
+            Generates an abstract plan for builders
 
             Args:
-                prompt (str): A query in natural language
+                query (str): A query in natural language
+                selected_data (DataSources): The selected data sources available
 
             Returns:
-                WayangPlanSpecification: Refined user query and selected data sources.
+                (WayangPlanHighLevel): A high level WayangPlan
 
             """
+
+            # Generate prompt
+            prompt = PromptLoader().load_decomposer_prompt(query, selected_data)
 
             # Append user prompt to chat
             self.chat.append({"role": "user", "content": prompt})
@@ -41,11 +46,12 @@ class Specifier:
             # Defines params and structured format for the model
             params = {
                 "model": self.model,
-                "input": self.chat
+                "input": self.chat,
+                "text_format": WayangPlanHighLevel
             }
 
             # Set effort if reasoning model
-            effort = SPECIFIER_AGENT_CONFIG.get("reason_effort")
+            effort = DECOMPOSER_AGENT_CONFIG.get("reason_effort")
         
             if effort:
                 params["reasoning"] = {"effort": effort}
@@ -56,5 +62,5 @@ class Specifier:
             # Return response
             return {
                 "raw": response,
-                "refined_query": response.output_text
+                "response": response.output_parsed
             }

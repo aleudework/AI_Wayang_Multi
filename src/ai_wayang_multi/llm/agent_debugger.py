@@ -15,7 +15,7 @@ class Debugger:
     def __init__(self, model: str | None = None, system_prompt: str | None = None, version: int | None = None):
         self.client = OpenAI()
         self.model = model or DEBUGGER_AGENT_CONFIG.get("model")
-        self.system_prompt = system_prompt or PromptLoader().load_builder_system_prompt()
+        self.system_prompt = system_prompt or PromptLoader().load_debugger_system_prompt()
         self.version = version or 0
         self.chat = []
 
@@ -47,13 +47,23 @@ class Debugger:
         self.version = version
 
         return self.get_version()
+    
+
+    def start(self) -> None:
+        """
+        Cleans the Debugger Agents chat so it only includes the system prompt
+
+        """
+
+        self.chat = [{"role": "system", "content": self.system_prompt}]
 
 
-    def debug_plan(self, plan: WayangPlan, wayang_errors: str, val_errors: List):
+    def debug_plan(self, query: str, plan: WayangPlan, wayang_errors: str, val_errors: List):
         """
         Debug a failed plan and tries to return. a new one
 
         Args:
+            query (str): The refined user query
             plan (WayangPlan): The failed Wayang plan for debugging
             wayang_errors (str): The error given by the Wayang server if any
             val_errors (List): The error given by the PlanValidator if any
@@ -67,7 +77,7 @@ class Debugger:
         self.version += 1
 
         # Create new user prompt
-        prompt = PromptLoader().load_debugger_prompt_template(plan, wayang_errors, val_errors)
+        prompt = PromptLoader().load_debugger_prompt(query, plan, wayang_errors, val_errors)
 
         # Add user prompt to chat
         self.chat.append({"role": "user", "content": prompt})
@@ -100,12 +110,3 @@ class Debugger:
             "wayang_plan": wayang_plan,
             "version": self.version
         }
-    
-
-    def start_debugger(self) -> None:
-        """
-        Cleans the Debugger Agents chat so it only includes the system prompt
-
-        """
-
-        self.chat = [{"role": "system", "content": self.system_prompt}]

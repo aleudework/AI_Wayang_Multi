@@ -1,0 +1,8 @@
+## User's query on what the Wayang plan must do:
+
+{query}
+
+----
+## Available Data Sources To Build The Wayang Plan:
+
+{selected_data}

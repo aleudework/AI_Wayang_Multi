@@ -2,6 +2,8 @@
 
 {query}
 
+---
+
 ## The raw plan that should be refined and align with the request.
 
 {wayang_plan}

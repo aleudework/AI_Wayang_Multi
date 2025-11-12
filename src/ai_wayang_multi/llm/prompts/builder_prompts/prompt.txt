@@ -1,11 +1,11 @@
 This is the previous generated steps by Builders or subtasks leading up to the task.
 
-If it is an input step, there is nothing:
+If it is an input step, there is nothing previously:
 
-{input}
+{previous_steps}
 
 This is the high level step you should turn into executable Wayang operators:
 
 {step}
 
-Make sure you **only** output your part of the plan and not the previous builded operators as all plan steps will be linked together in the end.
+Make sure your generated Wayang Plan **ONLY** is your part, or output your part of the plan and not the previous builded operators. All sub plans or steps will be linked together at the end.

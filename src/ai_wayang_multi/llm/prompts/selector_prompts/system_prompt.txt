@@ -33,4 +33,4 @@ Only output the names of the relevant data sources in either the text files list
 
 ---
 
-You will recieve the user's Wayang Plan reuqest in the next message. Interpret it carefully and output all relevant data sources.
+You will recieve the user's Wayang Plan request in the next message. Interpret it carefully and output all relevant data sources.

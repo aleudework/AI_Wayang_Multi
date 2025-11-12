@@ -28,7 +28,7 @@ You will receive:
 5. **User Query Context** — the original natural-language request for semantic alignment.  
 
 ---
-{data}
+{selected_data}
 
 ---
 ## Available Operators
@@ -136,7 +136,7 @@ An example of a map operation with UDF after JDBC input:
 8. Final plan can be parsed and executed by the Wayang engine.
 
 ---
-In the next message, you will recieve the request Wayang Plan in natural-language and the raw WayangPlan that you need to refine.
+In the next message, you will recieve the request Wayang Plan in natural-language, and the full WayangPlan that you need to refine.
 
 
 

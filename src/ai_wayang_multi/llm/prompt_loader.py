@@ -2,31 +2,43 @@ from pathlib import Path
 import os
 import json
 from typing import List, Dict
-from ai_wayang_multi.llm.models import WayangPlan, Step
+from ai_wayang_multi.llm.models import WayangPlan, Step, DataSources, WayangOperation
 
 
 class PromptLoader:
     """
     Loads and prepares prompts for agents
-
     """
+
     def __init__(self):
         self.prompt_folder = Path(__file__).resolve().parent / "prompts"
         self.data_folder = Path(__file__).resolve().parent.parent.parent.parent / "data"
     
-    ### System prompt loaders
+    ### System prompt loaders    
     def load_specifier_system_prompt(self) -> str:
         """
-        Load system prompt
+        Load system prompt for specifier
+
+        Returns:
+            (str): system prompt
+        """
+
+        # Get and return system prompt
+        return self._read_file(self.prompt_folder, "specifier_prompts/system_prompt.txt")
+
+    
+    def load_selector_system_prompt(self) -> str:
+        """
+        Load system prompt for selector
 
         Returns:
             (str): system prompt
         """
 
         # Get system prompt template
-        system_prompt = self._read_file(self.prompt_folder, "specifier_prompts/system_prompt.txt")
+        system_prompt = self._read_file(self.prompt_folder, "selector_prompts/system_prompt.txt")
 
-        # Get general prompt templates
+        # Load data prompt with all available data sources
         data_prompt = self.load_data_prompt()
 
         # Fill system prompt template
@@ -34,66 +46,80 @@ class PromptLoader:
 
         return system_prompt
     
-    
-    def load_planner_system_prompt(self) -> str:
+
+    def load_decomposer_system_prompt(self) -> str:
         """
-        Load system prompt
+        Load system prompt for Decomposer Agent
         
         Returns:
             (str): system prompt
-        """
+        """ 
 
-        system_prompt = self._read_file(self.prompt_folder, "planner_prompts/system_prompt.txt")
+        # Load system prompt templates
+        system_prompt = self._read_file(self.prompt_folder, "decomposer_prompts/system_prompt.txt")
         operator_prompt = self.load_operators()
-        few_shot_prompt = self.load_few_shot_prompt()
+        few_shot_prompt = self.load_few_shot_prompt()    
 
+        # Fill system prompt template
         system_prompt = system_prompt.replace("{operators}", operator_prompt)
         system_prompt = system_prompt.replace("{examples}", few_shot_prompt)
 
         return system_prompt
     
-    
-    def load_planner_prompt(self, query: str, data_sources: dict) -> str:
+
+    def load_decomposer_prompt(self, query: str, selected_data: DataSources) -> str:
         """
-        Load prompt for Planner Agent
+        Load standard prompt
 
         Args:
-            query (str): The detailed query description of the WayangPlan
-            data_sources (dict): The dictionary with lists of the selected data 
-        
+            query (str): The query (refined) of what the Wayang Plan should do
+            selected_data (DataSources): The available data sources for the plan
+
         Returns:
-            (str): The formatted prompt
+            (str): prompt filled
         """
 
-        prompt_template = self._read_file(self.prompt_folder, "planner_prompts/standard_prompt.txt")
+        # Format to dict
+        data_sources = {
+            "tables": selected_data.tables,
+            "textfiles": selected_data.textfiles
+        }
 
-        selected_data_prompt = self.load_selected_data_prompt(data_sources)
+        # Load system prompt templates
+        prompt = self._read_file(self.prompt_folder, "decomposer_prompts/prompt.txt")
+        data_prompt = self.load_selected_data_prompt(data_sources)
 
-        prompt_template = prompt_template.replace("{query}", query)
-        prompt_template = prompt_template.replace("{selected_data_prompt}", selected_data_prompt)
+        # Fill prompt template
+        prompt = prompt.replace("{query}", query)
+        prompt = prompt.replace("{selected_data}", data_prompt)
 
-        return prompt_template
-    
+        return prompt
 
-    def load_builder_system_prompt(self, query, selected_data) -> str:
+
+    def load_builder_system_prompt(self, query: str, selected_data: DataSources) -> str:
         """
         Load and prepare system prompt for Builder Agent
 
         Args:
             query (str): The query (refined) of the plan to be built
-            selected_data (dict): The data sources to be used selected by Specifier Agent
+            selected_data (DataSources): The data sources to be used selected by Specifier Agent
 
         Returns:
             (str): Builder's system prompt
 
         """
+        
+        # Format to dict
+        data_sources = {
+            "tables": selected_data.tables,
+            "textfiles": selected_data.textfiles
+        }
 
         # Get system prompt template
         system_prompt = self._read_file(self.prompt_folder, "builder_prompts/system_prompt.txt")
-        important_notes = self._read_file(self.prompt_folder, "builder_prompts/important_notes.txt")
         
         # Get general prompt templates
-        data_prompt = self.load_selected_data_prompt(selected_data)
+        data_prompt = self.load_selected_data_prompt(data_sources)
         operator_prompt = self.load_operators()
         few_shot_prompt = self.load_few_shot_prompt()
 
@@ -101,42 +127,119 @@ class PromptLoader:
         system_prompt = system_prompt.replace("{selected_data}", data_prompt)
         system_prompt = system_prompt.replace("{operators}", operator_prompt)
         system_prompt = system_prompt.replace("{examples}", few_shot_prompt)
-        system_prompt = system_prompt.replace("{important}", important_notes)
         system_prompt = system_prompt.replace("{query}", query)
 
         return system_prompt
     
     
-    def load_builder_prompt(self, step: Step) -> str:
+    def load_builder_prompt(self, step: Step, previous_steps: List[WayangOperation]) -> str:
         """
         Load standard prompt for Builder Agent
 
         Args:
             step (Step): The step to be filled into the prompt
+            previous_steps (List[WayangOperation]): List of previous build and relevant operations
 
         Returns.
             (str): Prompt filled
 
         """
 
-        prompt = self._read_file(self.prompt_folder, "builder_prompts/standard_prompt.txt")
+        # Convert current Step to JSON
+        if hasattr(step, "model_dump"):
+            step_json = json.dumps(step.model_dump(), indent=4, ensure_ascii=False)
+        elif hasattr(step, "to_json"):
+            step_json = step.to_json(indent=4)
+        else:
+            step_json = json.dumps(step.__dict__, indent=4, ensure_ascii=False)
 
-        step_json = step.model_dump_json(indent=2)
+        # Convert WayangOperations to list
+        previous_json = []
 
+        for op in previous_steps:
+            if hasattr(op, "model_dump"):
+                op_json = op.model_dump()
+            else:
+                op_json = op.__dict__
+
+            previous_json.append(op_json)
+        
+        # Convert list to json
+        previous_json = json.dumps(previous_json, indent=4, ensure_ascii=False)
+
+        # Get prompt
+        prompt = self._read_file(self.prompt_folder, "builder_prompts/prompt.txt")
+
+        # Fill prompt
+        prompt = prompt.replace("{previous_steps}", previous_json)
         prompt = prompt.replace("{step}", step_json)
 
         return prompt
     
-
     
-    def load_refiner_system_prompt(self) -> str:
+    def load_refiner_system_prompt(self, selected_data: DataSources) -> str:
         """
-        Load system prompt
+        Load and prepare system prompt for Refiner Agent
+
+        Args:
+            selected_data (DataSources): The data sources to be used selected by Specifier Agent
 
         Returns:
-            (str): system prompt
+            (str): Refiner's system prompt
+
         """
-        return
+        
+        # Format to dict
+        data_sources = {
+            "tables": selected_data.tables,
+            "textfiles": selected_data.textfiles
+        }
+
+        # Get system prompt template
+        system_prompt = self._read_file(self.prompt_folder, "refiner_prompts/system_prompt.txt")
+        
+        # Get general prompt templates
+        data_prompt = self.load_selected_data_prompt(data_sources)
+        operator_prompt = self.load_operators()
+        few_shot_prompt = self.load_few_shot_prompt()
+
+        # Fill system prompt template
+        system_prompt = system_prompt.replace("{selected_data}", data_prompt)
+        system_prompt = system_prompt.replace("{operators}", operator_prompt)
+        system_prompt = system_prompt.replace("{examples}", few_shot_prompt)
+
+        return system_prompt
+    
+    
+    def load_refiner_prompt(self, query: str, wayang_plan: WayangPlan) -> str:
+        """
+        Load standard prompt for Builder Agent
+
+        Args:
+            query (str): The refined user query
+            wayang_plan (WayangPlan): The full WayangPlan
+
+        Returns.
+            (str): Prompt filled
+
+        """
+
+        # Get prompt
+        prompt = self._read_file(self.prompt_folder, "refiner_prompts/prompt.txt")
+
+        # Convert to correct JSON from WayangPlan model
+        if hasattr(wayang_plan, "model_dump"):
+            wayang_plan = json.dumps(wayang_plan.model_dump(), indent=4)
+        elif hasattr(wayang_plan, "to_json"):
+            wayang_plan = wayang_plan.to_json(indent=4)
+        else:
+            wayang_plan = json.dumps(wayang_plan.__dict__, indent=4)
+
+        # Fill prompt
+        prompt = prompt.replace("{query}", query)
+        prompt = prompt.replace("{wayang_plan}", wayang_plan)
+
+        return prompt
     
 
     def load_debugger_system_prompt(self) -> str:
@@ -153,22 +256,21 @@ class PromptLoader:
 
         # Load general prompt templates
         operators_prompt = self.load_operators()
-        few_shot_prompt = self.load_few_shot_prompt()
 
         # Fill system prompt
-        # REMEMBER TO LOAD
         system_prompt = system_prompt.replace("{operators}", operators_prompt)
 
         # Get and return system prompt
         return system_prompt
     
 
-    def load_debugger_prompt_template(self, failed_plan: WayangPlan, wayang_errors: str, val_errors: List) -> str:
+    def load_debugger_prompt(self, query: str, failed_plan: WayangPlan, wayang_errors: str, val_errors: List) -> str:
         """
         Load and prepare prompt to be sent to the Debugger.
         The prompt is about fixing a failed plan
 
         Args:
+            query (str): The refined user query
             failed_plan (WayangPlan): The failed Wayang plan
             wayang_errors (str): The error provided by the Wayang server
             val_errors (List): Errors from PlanValidator if any
@@ -179,7 +281,7 @@ class PromptLoader:
         """
 
         # Get prompt template
-        prompt_template = self._read_file(self.prompt_folder, "debugger_prompts/standard_prompt.txt")
+        prompt_template = self._read_file(self.prompt_folder, "debugger_prompts/prompt.txt")
 
         # Convert to correct JSON from WayangPlan model
         if hasattr(failed_plan, "model_dump"):
@@ -200,6 +302,7 @@ class PromptLoader:
         prompt_template = prompt_template.replace("{failed_plan}", failed_plan)
         prompt_template = prompt_template.replace("{wayang_errors}", wayang_errors)
         prompt_template = prompt_template.replace("{val_errors}", val_errors)
+        prompt_template = prompt_template.replace("{query}", query)
 
         return prompt_template
     
@@ -217,7 +320,7 @@ class PromptLoader:
         """
 
         # Load answer template
-        answer_prompt = self._read_file(self.prompt_folder, "debugger_prompts/agent_answer.txt")
+        answer_prompt = self._read_file(self.prompt_folder, "debugger_prompts/answer.txt")
 
         # Load debuggers fixed plan and thoughts
         fixed_plan = json.dumps([op.model_dump() for op in wayang_plan.operations], indent=2, ensure_ascii=False)

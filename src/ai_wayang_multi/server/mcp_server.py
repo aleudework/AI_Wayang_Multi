@@ -2,9 +2,12 @@
 from mcp.server.fastmcp import FastMCP
 from ai_wayang_multi.config.settings import MCP_CONFIG, INPUT_CONFIG, OUTPUT_CONFIG, DEBUGGER_AGENT_CONFIG
 from ai_wayang_multi.llm.agent_specifier import Specifier
-from ai_wayang_multi.llm.agent_planner import Planner
+from ai_wayang_multi.llm.agent_selector import Selector
+from ai_wayang_multi.llm.agent_decomposer import Decomposer
 from ai_wayang_multi.llm.agent_builder import Builder
+from ai_wayang_multi.llm.agent_refiner import Refiner
 from ai_wayang_multi.llm.agent_debugger import Debugger
+from ai_wayang_multi.wayang.step_handler import StepHandler
 from ai_wayang_multi.wayang.plan_mapper import PlanMapper
 from ai_wayang_multi.wayang.plan_validator import PlanValidator
 from ai_wayang_multi.wayang.wayang_executor import WayangExecutor
@@ -25,9 +28,12 @@ config = {
 
 # Initialize agents and objects
 specifier_agent = Specifier() # Initialize specifier agent
-planner_agent = Planner() # Initialize planner agent
+selector_agent = Selector() # Initialize selector agent
+decomposer_agent = Decomposer() # Initialize planner agent
 builder_agent = Builder() # Initialize builder agent
+refiner_agent = Refiner() # Initialize refiner agent
 debugger_agent = Debugger() # Initialize debugger agent
+step_handler = StepHandler() # Initialize step handler
 plan_mapper = PlanMapper(config=config) # Initialize mapper
 plan_validator = PlanValidator() # Initialize validator
 wayang_executor = WayangExecutor() # Wayang executor
@@ -61,89 +67,126 @@ def query_wayang(describe_wayang_plan: str) -> str:
         # Set up logger 
         logger = Logger()
         logger.add_message("User query: Plan description from client LLM", describe_wayang_plan)
+        print("[INFO] Starting generating Wayang plans")
         
-        # Initialize variables
+        # Initialize important variables
         status_code = None # Status code from validator or Wayang server
         result = None # Variable to store output
         version = 1 # Keeping track of plan version for this session
 
-        ### --- Select data sources and elaborate on query --- ###
-        
+
+        ### --- Specifier Agent, to specify clearly write the user's request --- ###
+
+        specifier_agent.start() # New specifier session
         response = specifier_agent.generate(describe_wayang_plan)
-        output = response.get("response")
-
-        print("[INFO] SpecifierAgent: Query elaborated and data sources selected")
-        logger.add_message("Agent Usage: SpecifierAgent Information", {"model": str(response["raw"].model), "usage": response["raw"].usage.model_dump()})
-        logger.add_message("Agent: SpecifierAgent Output", output.model_dump())
-
-        refined_query = output.refined_query
-
-        data_sources = {
-            "tables": output.selected_sources.tables,
-            "textfiles": output.selected_sources.textfiles
-        }
-
-        ### --- Generate Abstract Wayang Plan --- ###
-
-        planner_agent.start()
-
-        response = planner_agent.generate(refined_query, data_sources)
-
-        abstract_plan = response.get("abstract_plan")
-
-        steps = sorted(abstract_plan.steps, key=lambda s: s.step_id)
-
-        print("[INFO] PlannerAgent: Abstract Plan generated")
-        logger.add_message("Agent Usage: PlannerAgent Information", {"model": str(response["raw"].model), "usage": response["raw"].usage.model_dump()})
-        logger.add_message("Agent: PlannerAgent Output", abstract_plan.model_dump())   
-
-        ### --- Build Wayang Plan --- ###
-
-        # Plan variable to append
-
-        raw_plan = []
-
-        builder_agent.start(refined_query, data_sources)
-
-        for i, step in enumerate(steps):
-
-            # Prompt
-            # Answer
-            # Add to raw_plan
-            # Add answer to builder
-
-        # Sort by id"
-
-        ### --- Refine Wayang Plan --- ###
-
-        ### --- Map Wayang Plan --- ###
-
-        ### --- Validate Wayang Plan --- ###
-
-        return None 
-
-        ### --- Generate Wayang Plan Draft --- ###
-
-        # Generate plan
-        print("[INFO] Generates raw plan")
-        response = builder_agent.generate_plan(describe_wayang_plan)
-        raw_plan = response.get("wayang_plan")
+        refined_query = response.get("refined_query") # Get only the relevant resonse
 
         # Logging
-        print("[INFO] Draft generated")
-        logger.add_message("Agent Usage: BuilderAgent Information", {"model": str(response["raw"].model), "usage": response["raw"].usage.model_dump()})
-        logger.add_message("Agent: BuilderAgent Raw Plan", raw_plan.model_dump())
+        print("[INFO] SpecifierAgent: User query refined and clearified")
+        logger.add_message("Agent Usage: SpecifierAgent Information", {"model": str(response["raw"].model), "usage": response["raw"].usage.model_dump()})
+        logger.add_message("Agent: SpecifierAgent Output", refined_query)        
+
+
+        ### --- Selector Agent, to select relevant data sources --- ###
+
+        selector_agent.start() # New selector session
+        response = selector_agent.generate(describe_wayang_plan)
+        data_selected = response.get("selected_data") # The selected data from agent
+
+        # Logging
+        print("[INFO] SelectorAgent: Relevant data sources selected")
+        logger.add_message("Agent Usage: SelectorAgent Information", {"model": str(response["raw"].model), "usage": response["raw"].usage.model_dump()})
+        logger.add_message("Agent: SelectorAgent Output", data_selected.model_dump())
+
+        
+        ### --- Decomposer Agent, to decompose the user's query into subtasks / steps for Builders --- ###
+
+        decomposer_agent.start() # New decomposer session
+        response = decomposer_agent.generate(refined_query, data_selected)
+        highlevel_plan = response.get("response")
+
+        # Logging
+        print("[INFO] DecomposerAgent: High level Wayang Plan built")
+        logger.add_message("Agent Usage: DecomposerAgent Information", {"model": str(response["raw"].model), "usage": response["raw"].usage.model_dump()})
+        logger.add_message("Agent: DecomposerAgent Output", highlevel_plan.model_dump())
+
+
+        ### --- Builder Agents, builds the Wayang Plan from the high level plan --- ###
+
+        builder_agent.start(refined_query, data_selected) # New builder session
+        steps = highlevel_plan.steps # Get the step list from plan
+
+        # Build step dependencies map
+        step_dependencies = step_handler.build_step_dependency_map(steps)
+        # Build step queue
+        step_queue = step_handler.build_step_queue(step_dependencies)
+
+        # Logging
+        print("[INFO] StepHandler created step dependencies and queue")
+        logger.add_message("Class: StepHandler created step dependencies and queue", f"Step queue {step_queue}")
+
+        # Map for generated subplans
+        subplans = {}
+
+        # Go over queue for each steps and generate subplans
+        for step_id in step_queue:
+            # Current step variable
+            current_step = None
+
+            # Get current step from Decomposer
+            for step in steps:
+                if step.step_id == step_id:
+                    current_step = step
+                    break
+            
+            # Get previously generated subplans to add context for this subplan 
+            previous_steps = step_handler.get_steps(step_dependencies[step_id], subplans, step_queue)
+
+            # Generate subplan
+            response = builder_agent.generate(current_step, previous_steps)
+            subplan = response.get("wayang_subplan")
+
+            # Add subplan to subplans
+            subplans[step_id] = subplan
+
+            # Logging
+            print(f"[INFO] BuilderAgent: Step or subplan generated for step {step_id}")
+            logger.add_message(f"Agent Usage: BuilderAgent Information step {step_id}", {"model": str(response["raw"].model), "usage": response["raw"].usage.model_dump()})
+            logger.add_message(f"Agent: BuilderAgent Subplan for step {step_id}", subplan.model_dump())
+
+        
+        # Merge subplans into a final Wayang Plan based on queue order
+        full_plan = step_handler.step_merger(step_queue, subplans)
+
+        # Logging
+        print("[INFO] StepHandler merged subplans to full plan")
+        logger.add_message("Class: StepHandler merged subplans to full plan", full_plan.model_dump())
+
+
+        ### --- Refiner Agent: Refine the full plan to be executable in Wayang Server --- ###
+
+        refiner_agent.start(data_selected) # New refiner session
+
+        # Refine Wayang Plan
+        response = refiner_agent.generate(refined_query, full_plan)
+        refined_plan = response.get("wayang_plan")
+
+        # Logging
+        print("[INFO] RefinerAgent: Refiner Agent refined main wayang plan")
+        logger.add_message("Agent Usage: RefinerAgent Information", {"model": str(response["raw"].model), "usage": response["raw"].usage.model_dump()})
+        logger.add_message("Agent: RefinerAgent Output", refined_plan.model_dump())
+
 
 
         ### --- Map Raw Plan to Executable Plan --- ###
 
         # Map plan
-        print("[INFO] Mapping plan")
-        wayang_plan = plan_mapper.plan_to_json(raw_plan)
+        print("[INFO] Refined Plan Mapping")
+        wayang_plan = plan_mapper.plan_to_json(refined_plan)
 
         # Logging
         print("[INFO] Plan mapped")
-        logger.add_message("Class: PlanMapper Mapped plan finalized for execution", {"version": 1, "plan": wayang_plan})
+        logger.add_message("Class: PlanMapper Mapped the refined plan finalized for execution", {"version": 1, "plan": wayang_plan})
 
 
         ### --- Validate Plan --- ###
@@ -184,7 +227,7 @@ def query_wayang(describe_wayang_plan: str) -> str:
         ### --- Debug Plan --- ###
         
         # Check if debugger should be used
-        use_debugger = DEBUGGER_MODEL_CONFIG.get("use_debugger")
+        use_debugger = DEBUGGER_AGENT_CONFIG.get("use_debugger")
 
         # Use debugger if true
         if use_debugger == "True" and status_code != 200:
@@ -193,9 +236,9 @@ def query_wayang(describe_wayang_plan: str) -> str:
             print("[INFO] Using Debugger Agent to fix plan")
 
             # Set debugging parameters
-            max_itr = int(DEBUGGER_MODEL_CONFIG.get("max_itr")) # Get max iterations for debugging
+            max_itr = int(DEBUGGER_AGENT_CONFIG.get("max_itr")) # Get max iterations for debugging
+            debugger_agent.start() # Initialize debugger session 
             debugger_agent.set_vesion(version) # Set version to number of plans already created this session
-            debugger_agent.start_debugger() # Load debugger session 
 
             # Debug and execute plan up to max iterations
             for _ in range(max_itr):
@@ -206,7 +249,7 @@ def query_wayang(describe_wayang_plan: str) -> str:
                 print(f"[INFO] PlanMapper Simplifies JSON")
 
                 # Debug plan
-                response = debugger_agent.debug_plan(failed_plan, wayang_errors=result, val_errors=val_errors) # Debug plan
+                response = debugger_agent.debug_plan(refined_query, failed_plan, wayang_errors=result, val_errors=val_errors) # Debug plan
                 version = debugger_agent.get_version() # Current plan version
                 raw_plan = response.get("wayang_plan") # Get only the debugged plan
                 print("[INFO] Plan debugged by debugger")
@@ -219,9 +262,16 @@ def query_wayang(describe_wayang_plan: str) -> str:
                 logger.add_message(f"Agent: DebuggerAgent's thoughts, plan {version}", {"version": version, "thoughts": raw_plan.thoughts})
                 logger.add_message(f"Agent: DebuggerAgent's plan: {version}", {"version": version, "plan": wayang_plan})
 
+                # Refines the debugged plan by Refiner Agent
+                response = refiner_agent.generate(refined_query, raw_plan)
+                refined_plan = response.get("wayang_plan")
+
+                # Logging
+                logger.add_message(f"Agent Usage: RefinerAgent. Refines version {version} information", {"model": str(response["raw"].model), "usage": response["raw"].usage.model_dump()})
+                logger.add_message(f"Agent: RefinerAgent's plan: {version}", {"version": version, "plan": refined_plan})
 
                 # Map the debugged plan to JSON-format
-                wayang_plan = plan_mapper.plan_to_json(raw_plan)
+                wayang_plan = plan_mapper.plan_to_json(refined_plan)
                 print("[INFO] Plan mapped by PlanMapper")
                 logger.add_message("Class: PlanMapper Mapped Debug Plan", "")
                 
@@ -331,31 +381,3 @@ def load_schemas() -> str:
         # Print and returns error
         print(f"[ERROR] {e}")
         return f"An error occured, error: {e}"
-
-
-# TEMP
-# Test MCP
-@mcp.tool()
-def greeto(name: str) -> str:
-    return f"Hello:)), {name}!"
-
-#Test MCP
-import requests
-import json
-
-@mcp.tool()
-def execute_wayang_plan(plan_file_path: str) -> str:
-    url = 'http://localhost:8080/wayang-api-json/submit-plan/json'
-
-    with open(plan_file_path, 'r') as f:
-        plan = json.load(f)
-
-    res = requests.post(url, json=plan)
-
-    print("Status code:", res.status_code)
-    print("Response body:", res.text)
-    
-    if res.status_code != 200:
-        return f"Error: {res.status_code}: {res.text}"
-
-    return res.text

@@ -33,11 +33,6 @@ The operators are given to the Builder Agents. You should not break steps down t
 {examples}
 
 ---
-### Available Data Sources
-
-{selected_data}
-
----
 ### Your Responsibilities
 
 ## Your Responsibilities
@@ -98,3 +93,4 @@ Produce a valid JSON object following this structure:
 ---
 
 In the next message, you will recieve the natural-language user request / plan specification of the Wayang Plan to be built.
+You will also get the data sources available.

@@ -1,17 +1,18 @@
 from openai import OpenAI
-from ai_wayang_multi.config.settings import SPECIFIER_AGENT_CONFIG
+from ai_wayang_multi.config.settings import SELECTOR_AGENT_CONFIG
 from ai_wayang_multi.llm.prompt_loader import PromptLoader
+from ai_wayang_multi.llm.models import DataSources
 
-class Specifier:
+class Selector:
         """
-        Agent to rewrite user request in clearly English with relevant specification.
+        Agent to select relevant data sources and to reduce the number of sources for next agents
         
         """
 
         def __init__(self, model: str | None = None, system_prompt: str | None = None):
             self.client = OpenAI()
-            self.model = model or SPECIFIER_AGENT_CONFIG.get("model")
-            self.system_prompt = system_prompt or PromptLoader().load_specifier_system_prompt()
+            self.model = model or SELECTOR_AGENT_CONFIG.get("model")
+            self.system_prompt = system_prompt or PromptLoader().load_selector_system_prompt()
             self.chat = []
 
 
@@ -41,11 +42,12 @@ class Specifier:
             # Defines params and structured format for the model
             params = {
                 "model": self.model,
-                "input": self.chat
+                "input": self.chat,
+                "text_format": DataSources
             }
 
             # Set effort if reasoning model
-            effort = SPECIFIER_AGENT_CONFIG.get("reason_effort")
+            effort = SELECTOR_AGENT_CONFIG.get("reason_effort")
         
             if effort:
                 params["reasoning"] = {"effort": effort}
@@ -56,5 +58,5 @@ class Specifier:
             # Return response
             return {
                 "raw": response,
-                "refined_query": response.output_text
+                "selected_data": response.output_parsed
             }

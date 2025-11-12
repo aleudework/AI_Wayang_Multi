@@ -1,14 +1,75 @@
-"""
-Input:
-    User Query
-    Data
-    Operations
-    Few Shot
-    Abstract Plan
+from openai import OpenAI
+from ai_wayang_multi.config.settings import REFINER_AGENT_CONFIG
+from typing import List
+from ai_wayang_multi.llm.models import WayangPlan, Step, DataSources
+from ai_wayang_multi.llm.prompt_loader import PromptLoader
 
-    The full WayangPlan (made together by mapper)
+class Refiner:
+    """
+    Builder Agent based on OpenAI's GPT-models.
+    The agents build an logical, abstract plan from natural langauge query
+    """
 
-Output:
-    Finalized plan
+    def __init__(self, model: str | None = None, system_prompt: str | None = None):
+        self.client = OpenAI()
+        self.model = model or REFINER_AGENT_CONFIG.get("model")
+        self.system_prompt = system_prompt or None
+        self.chat = []
 
-"""
+
+    def start(self, selected_data: DataSources) -> None:
+        """
+        Cleans Builder Agent so it only includes system prompt
+
+        Args:
+            selected_data (dict): The data sources to be used selected by Specifier Agent
+
+        """
+
+        self.system_prompt = PromptLoader().load_refiner_system_prompt(selected_data)
+        self.chat = [{"role": "system", "content": self.system_prompt}]
+
+    
+    def generate(self, query: str, wayang_plan: WayangPlan) -> WayangPlan:
+        """
+        Refines and aligns the current wayang_plan
+        
+        Args:
+            query (str): The refined query
+            wayang_plan (WayangPlan): The current full Wayang Plan to be refined
+
+        Returns:
+            (WayangPlan): The refined Wayang Plan
+        
+        """
+
+        # Load prompt
+        prompt = PromptLoader().load_refiner_prompt(query, wayang_plan)
+
+        # Make a copy of the chat for this refiner
+        this_chat = self.chat
+
+        # Append to this chat for this refiner
+        this_chat.append({"role": "user", "content": prompt})
+
+        # Defines params and structured format for the model
+        params = {
+            "model": self.model,
+            "input": this_chat,
+            "text_format": WayangPlan
+        }
+
+        # Set effort if reasoning model
+        effort = REFINER_AGENT_CONFIG.get("reason_effort")
+    
+        if effort:
+            params["reasoning"] = {"effort": effort}
+
+        # Generate response
+        response = self.client.responses.parse(**params)
+
+        # Return response
+        return {
+            "raw": response,
+            "wayang_plan": response.output_parsed
+        }

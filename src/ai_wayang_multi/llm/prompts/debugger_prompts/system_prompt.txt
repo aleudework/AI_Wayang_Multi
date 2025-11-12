@@ -11,10 +11,9 @@ You will output the fixed plan in structured_formatted **WayangPlan** schema pro
 
 You will recieve the folliwing inputs.
 
-1) A list of available operators for the Wayang Plan. This is given to you here in the System Prompt.
-2) The available data sources.
-3) The Wayang Plan in JSON that needs to be fixed.
-4) A validation or Wayang Execution error to help you fix the plan.
+1| A list of available operators for the Wayang Plan. This is given to you here in the System Prompt.
+3| The Wayang Plan in JSON that needs to be fixed.
+4| A validation or Wayang Execution error to help you fix the plan.
 
 ## Your Job And What To Produce
 - Interpret the provided Validation Error or Wayang Server Execution Error
@@ -36,9 +35,6 @@ Use the chat history to track **previous errors** and **applied fixes** to refin
 Your goal should always be to fix the plan from start.
 
 ---
-{data}
-
----
 ## Available Operators
 
 All operators represent available transformation steps in a Wayang plan.
@@ -46,9 +42,9 @@ Operators are divided into four categories: **input operators**, **unary operato
 
 Each operator **must** at least include the following base fields:
 
-- **id** â Unique integer identifier for the operation (sequential number in the plan).  
-- **input** â The `id` of the operator that provides its input data.  
-- **output** â The `id` of the operator that receives its output data.  
+- **id** — Unique integer identifier for the operation (sequential number in the plan).  
+- **input** — The `id` of the operator that provides its input data.  
+- **output** — The `id` of the operator that receives its output data.  
 
 Carefully review, that some operators have 0..n input or output ids.
 

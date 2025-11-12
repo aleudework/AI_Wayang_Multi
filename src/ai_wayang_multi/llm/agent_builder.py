@@ -1,19 +1,6 @@
-"""
-    Input:
-        Operators
-        Data
-        Few-shot
-        User Query
-        Step from planner with input (if there is an input)
-
-    Output:
-        The output structured in a plan (same as normal builder)
-
-"""
-
-
 from openai import OpenAI
 from ai_wayang_multi.config.settings import BUILDER_AGENT_CONFIG
+from typing import List
 from ai_wayang_multi.llm.models import WayangPlan, Step
 from ai_wayang_multi.llm.prompt_loader import PromptLoader
 
@@ -44,31 +31,32 @@ class Builder:
         self.chat = [{"role": "system", "content": self.system_prompt}]
 
     
-    def generate(self, wayang_step: Step) -> WayangPlan:
+    def generate(self, step: Step, previous_steps: List) -> WayangPlan:
         """
+        Generate the step logic with correct operations
+        
+        Args:
+            step (Step): The step to be generated as WayangPlan
+            previous_steps: The previous dependend steps already generated 
+
+        Returns:
+            (WayangPlan): The new steps generated
         
         """
 
+        # Load prompt
+        prompt = PromptLoader().load_builder_prompt(step, previous_steps)
 
-    def generate_plan(self, prompt: str):
-        """
-        Generates a logical, abstract Wayang plan from a natural language query.
+        # Make a copy of the chat for this builder
+        this_chat = self.chat
 
-        Args:
-            prompt (str): A query in natural language
-
-        Returns:
-            WayangPlan: A logical Wayang plan 
-
-        """
+        # Append to this chat for this builder
+        this_chat.append({"role": "user", "content": prompt})
 
         # Defines params and structured format for the model
         params = {
             "model": self.model,
-            "input": [
-                {"role": "system", "content": self.system_prompt},
-                {"role": "user", "content": prompt},
-            ],
+            "input": this_chat,
             "text_format": WayangPlan
         }
 
@@ -84,8 +72,5 @@ class Builder:
         # Return response
         return {
             "raw": response,
-            "wayang_plan": response.output_parsed
+            "wayang_sub_plan": response.output_parsed
         }
-
-        
-

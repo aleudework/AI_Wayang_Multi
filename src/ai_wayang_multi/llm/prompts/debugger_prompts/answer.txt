@@ -1,6 +1,6 @@
 ## My fixed Wayang Plan:
 
-{fixed plan}
+{fixed_plan}
 
 ---
 ## My reasoning on the errors and my fix:
