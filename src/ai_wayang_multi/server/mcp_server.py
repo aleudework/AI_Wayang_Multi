@@ -42,7 +42,7 @@ wayang_executor = WayangExecutor() # Wayang executor
 last_session_result = "Nothing to output"
 
 @mcp.tool()
-def query_wayang(describe_wayang_plan: str) -> str:
+def query_wayang(describe_wayang_plan: str, model: str | None = None, reasoning: str | None = None) -> str:
     """
     Generates and execute a Wayang plan based on given query in national language.
     The query provided must be in Englis
@@ -62,6 +62,14 @@ def query_wayang(describe_wayang_plan: str) -> str:
 
     # Declaring variable as global
     global last_session_result
+
+    # Sets parametre (mainly for evaluation)
+    specifier_agent.set_model_and_reasoning(model, reasoning)
+    selector_agent.set_model_and_reasoning(model, reasoning)
+    decomposer_agent.set_model_and_reasoning(model, reasoning)
+    builder_agent.set_model_and_reasoning(model, reasoning)
+    refiner_agent.set_model_and_reasoning(model, reasoning)
+    debugger_agent.set_model_and_reasoning(model, reasoning)
 
     try:
         # Set up logger 
