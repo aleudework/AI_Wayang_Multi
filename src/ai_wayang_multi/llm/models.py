@@ -16,12 +16,10 @@ class DataSources(BaseModel):
 ### For Decomposer Agent
 
 class Step(BaseModel):
-    step_id: int = Field(default=None, descrption="A number to represent this step in the plan")
-    input: List[int] = Field(default=None, description="The previous step_id needed for this step. If a binary operation step, write both step_ids")
-    output: List[int] = Field(default=None, description="The step_id of the following step. Which uses this output as an input")
-    step_description: str = Field(default=None, description="A detailed description of the logic on what this step must do to fullfil input and output")
-    expected_input: str = Field(default=None, description="A description of what input is expected for this step of the plan")
-    expected_output: str = Field(default=None, description="A description of what output is expected to be generated for this step of the plan")
+    step_id: int = Field(default=None, descrption="The step_id number for this step. Make sure that the number aligns with previous steps and no duplicates.")
+    transformation: str = Field(default=None, description="Describe what kind of transformation is happening in this step [input-transformation, unary-transformations, binary-transformations, output-transformation]")
+    depends_on: List[int] = Field(default=None, description="The previous step_id required to perform this step. If a binary operation step, write both step_ids")
+    detailed_description: str = Field(default=None, description="A detailed description of the logic or transformation that should happen in this step. Mention the expected input and output also for this transformation.")
 
 class WayangPlanHighLevel(BaseModel):
     steps: List[Step] = Field(default=None, description="The steps needed to generate the plan")

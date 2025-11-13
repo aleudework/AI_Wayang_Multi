@@ -118,6 +118,7 @@ def query_wayang(describe_wayang_plan: str) -> str:
 
         # Build step dependencies map
         step_dependencies = step_handler.build_step_dependency_map(steps)
+
         # Build step queue
         step_queue = step_handler.build_step_queue(step_dependencies)
 
@@ -135,19 +136,20 @@ def query_wayang(describe_wayang_plan: str) -> str:
 
             # Get current step from Decomposer
             for step in steps:
+
                 if step.step_id == step_id:
                     current_step = step
                     break
             
-            # Get previously generated subplans to add context for this subplan 
-            previous_steps = step_handler.get_steps(step_dependencies[step_id], subplans, step_queue)
+            # Get previously generated operations in a list to add context for this subplan 
+            previous_steps = step_handler.get_steps(step_dependencies.get(step_id, []), subplans, step_queue)
 
-            # Generate subplan
+            # Generate plan
             response = builder_agent.generate(current_step, previous_steps)
             subplan = response.get("wayang_subplan")
 
             # Add subplan to subplans
-            subplans[step_id] = subplan
+            subplans = step_handler.update_subplan(step_id, subplan, subplans)
 
             # Logging
             print(f"[INFO] BuilderAgent: Step or subplan generated for step {step_id}")
@@ -245,14 +247,14 @@ def query_wayang(describe_wayang_plan: str) -> str:
 
                 # Map and anonymize plan from executable json to raw format
                 failed_plan = plan_mapper.plan_from_json(wayang_plan)
-                logger.add_message("Class: PlanMapper Simplifies JSON", "")
-                print(f"[INFO] PlanMapper Simplifies JSON")
+                logger.add_message("Class: PlanMapper Simplifies to JSON", "")
+                print(f"[INFO] PlanMapper Simplifies to JSON")
 
                 # Debug plan
                 response = debugger_agent.debug_plan(refined_query, failed_plan, wayang_errors=result, val_errors=val_errors) # Debug plan
                 version = debugger_agent.get_version() # Current plan version
                 raw_plan = response.get("wayang_plan") # Get only the debugged plan
-                print("[INFO] Plan debugged by debugger")
+                print("[INFO] Plan debugged by Debugger")
 
                 # Get current plan version
                 version = debugger_agent.get_version()
@@ -260,20 +262,23 @@ def query_wayang(describe_wayang_plan: str) -> str:
                 # Logging
                 logger.add_message(f"Agent Usage: DebuggerAgent. Debug version {version} information", {"model": str(response["raw"].model), "usage": response["raw"].usage.model_dump()})
                 logger.add_message(f"Agent: DebuggerAgent's thoughts, plan {version}", {"version": version, "thoughts": raw_plan.thoughts})
-                logger.add_message(f"Agent: DebuggerAgent's plan: {version}", {"version": version, "plan": wayang_plan})
+                logger.add_message(f"Agent: DebuggerAgent's plan: {version}", {"version": version, "plan": raw_plan.model_dump()})
 
                 # Refines the debugged plan by Refiner Agent
                 response = refiner_agent.generate(refined_query, raw_plan)
                 refined_plan = response.get("wayang_plan")
+                print("[INFO] Plan refined by Refiner")
 
                 # Logging
+                
                 logger.add_message(f"Agent Usage: RefinerAgent. Refines version {version} information", {"model": str(response["raw"].model), "usage": response["raw"].usage.model_dump()})
-                logger.add_message(f"Agent: RefinerAgent's plan: {version}", {"version": version, "plan": refined_plan})
+                logger.add_message(f"Agent: RefinerAgent's plan: {version}", {"version": version, "plan": refined_plan.model_dump()})
 
                 # Map the debugged plan to JSON-format
                 wayang_plan = plan_mapper.plan_to_json(refined_plan)
-                print("[INFO] Plan mapped by PlanMapper")
-                logger.add_message("Class: PlanMapper Mapped Debug Plan", "")
+
+                print("[INFO] Plan re-mapped by PlanMapper")
+                logger.add_message("Class: PlanMapper Mapped Debug and Refined Plan", {"version": version, "plan": wayang_plan})
                 
                 # Validate debugged plan
                 val_success, val_errors = plan_validator.validate_plan(wayang_plan)
@@ -311,7 +316,6 @@ def query_wayang(describe_wayang_plan: str) -> str:
         if status_code == 200:
             print("[INFO] Plan succesfully executed")
             logger.add_message("Final: Sucessful. Plan executed", "Success")
-            temp_out = result # temp
 
             # Return result to client
             return result

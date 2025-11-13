@@ -86,3 +86,16 @@ Remember that the last operaiton don't have an output in the output array
 
 ## Important Note 2
 You must NOT change any table names, column names or file names for input and output operations. You must only do it if strictly necessary to fix the plan.
+
+----
+## Very Important Notes
+
+JDBC input returns data as a org.apache.wayang.basic.data.Record
+
+You'll need to call (r: org.apache.wayang.basic.data.Record) => {} to get columns in UDF.
+Use the getField method in UDF with the position of the column (e.g. Id is at position 0 then r.getField(0))´
+
+An example of a map operation with UDF after JDBC input:
+"udf": "(r: org.apache.wayang.basic.data.Record) => r.getField(0).toString
+
+If a table is used as input, it **MUST** follow a org.apache.wayang.basic.data.Record in the `udf` and not use a `row` or something arbitrary like that.

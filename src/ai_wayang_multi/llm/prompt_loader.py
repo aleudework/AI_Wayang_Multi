@@ -57,12 +57,10 @@ class PromptLoader:
 
         # Load system prompt templates
         system_prompt = self._read_file(self.prompt_folder, "decomposer_prompts/system_prompt.txt")
-        operator_prompt = self.load_operators()
-        few_shot_prompt = self.load_few_shot_prompt()    
+        sub_plans_examples = self._read_file(self.prompt_folder, "decomposer_prompts/few_shot_subplans.txt") 
 
         # Fill system prompt template
-        system_prompt = system_prompt.replace("{operators}", operator_prompt)
-        system_prompt = system_prompt.replace("{examples}", few_shot_prompt)
+        system_prompt = system_prompt.replace("{examples}", sub_plans_examples)
 
         return system_prompt
     

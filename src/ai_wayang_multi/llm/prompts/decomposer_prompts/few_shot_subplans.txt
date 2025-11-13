@@ -1,0 +1,149 @@
+## Example 1
+### User's natural-language request
+
+Load the customer CSV file, filter customers older than 30, and output the final dataset.
+
+### Output 
+{
+  "steps": [
+    {
+      "step_id": 1,
+      "transformation": "input-transformations",
+      "depends_on": [],
+      "detailed_description": "Load the customers textfile as input."
+    },
+    {
+      "step_id": 2,
+      "transformation": "unary-transformations",
+      "depends_on": [1],
+      "detailed_description": "Filter rows to keep only customers older than 30. Input: full customer dataset. Output: filtered dataset."
+    },
+    {
+      "step_id": 3,
+      "transformation": "output-transformations",
+      "depends_on": [2],
+      "detailed_description": "Write out the filtered customers to the requested textfile."
+    }
+  ],
+  "thoughts": "The task only needs loading, filtering, and outputting, so three steps are enough."
+}
+
+## Example 2
+### User's natural-language request
+
+Load sales data and product data from text files, join them on unique words, and compute the total revenue per product category.
+
+### Output
+{
+  "steps": [
+    {
+      "step_id": 1,
+      "transformation": "input-transformations",
+      "depends_on": [],
+      "detailed_description": "Load sales and products text files as inputs. You will need two seperate input operators and to use a flatMap to split into words instead of lines."
+    },
+    {
+      "step_id": 2,
+      "transformation": "binary-transformations",
+      "depends_on": [1],
+      "detailed_description": "Join the sales dataset with the product dataset using each unique word as key. Input: two datasets (words from text files). Output: joined dataset."
+    },
+    {
+      "step_id": 3,
+      "transformation": "unary-transformations",
+      "depends_on": [2],
+      "detailed_description": "Group by product category and compute total revenue. Input: joined dataset. Output: aggregated dataset."
+    }
+  ],
+  "thoughts": "The request has two inputs, one join, and one aggregation, so three steps are enough."
+} 
+
+## Example 3
+### User's natural-language request
+
+Load user activity logs and filter out events that are not related to purchases. Only keep rows where event_type = ‘purchase’.
+
+### Output 
+{
+  "steps": [
+    {
+      "step_id": 1,
+      "transformation": "input-transformations",
+      "depends_on": [],
+      "detailed_description": "Load activity_logs table and all columns, as the input dataset."
+    },
+    {
+      "step_id": 2,
+      "transformation": "unary-transformations",
+      "depends_on": [1],
+      "detailed_description": "Filter rows where event_type equals 'purchase'. Input: complete logs. Output: filtered logs."
+    }
+  ],
+  "thoughts": "Only an input and a filter are needed."
+}
+
+## Example 4
+### User's natural-language request
+
+Load orders and payments, join them on order_id, filter failed payments, and output the final clean dataset.
+
+### Output 
+{
+  "steps": [
+    {
+      "step_id": 1,
+      "transformation": "input-transformations",
+      "depends_on": [],
+      "detailed_description": "Load orders and payments table and all their columns."
+    },
+    {
+      "step_id": 2,
+      "transformation": "binary-transformations",
+      "depends_on": [1],
+      "detailed_description": "Join the orders dataset with payments dataset on order_id. Output: combined dataset."
+    },
+    {
+      "step_id": 3,
+      "transformation": "unary-transformations",
+      "depends_on": [2],
+      "detailed_description": "Filter out rows where payment_status is 'failed'. Output: clean dataset."
+    },
+    {
+      "step_id": 4,
+      "transformation": "output-transformations",
+      "depends_on": [3],
+      "detailed_description": "Write the cleaned dataset to textfile output."
+    }
+  ],
+  "thoughts": "A multi-step process with input, join, filter, and output."
+}
+
+## Example 5
+### User's natural-language request
+
+Load a dataset of taxi trips, compute distance for each trip from coordinates, then compute the average distance per day
+
+### Output 
+{
+  "steps": [
+    {
+      "step_id": 1,
+      "transformation": "input-transformations",
+      "depends_on": [],
+      "detailed_description": "Load taxi_trips table as input."
+    },
+    {
+      "step_id": 2,
+      "transformation": "unary-transformations",
+      "depends_on": [1],
+      "detailed_description": "Compute trip distance using start and end coordinates and add it as a new column. Input: raw trips. Output: trips with distance column."
+    },
+    {
+      "step_id": 3,
+      "transformation": "unary-transformations",
+      "depends_on": [2],
+      "detailed_description": "Group trips by day and compute the average distance. Input: trips with distance. Output: aggregated daily averages."
+    }
+  ],
+  "thoughts": "One input and two transformations (distance computation + aggregation) are enough."
+}

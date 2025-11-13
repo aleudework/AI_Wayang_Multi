@@ -72,5 +72,5 @@ class Builder:
         # Return response
         return {
             "raw": response,
-            "wayang_sub_plan": response.output_parsed
+            "wayang_subplan": response.output_parsed
         }

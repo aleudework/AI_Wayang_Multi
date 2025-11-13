@@ -28,6 +28,12 @@ class StepHandler:
 
         # Add operations in same order as queue
         for step_id in queue:
+
+            # Continue af step_id no longer in subplan
+            if step_id not in subplans:
+                continue
+
+            # Add to operations list
             step_operations = subplans[step_id].operations
             operations.extend(step_operations)
 
@@ -39,6 +45,48 @@ class StepHandler:
 
         # Return Wayang plan
         return wayang_plan
+    
+    def update_subplan(self, step_id: int, subplan: WayangPlan, subplans: dict) -> dict:
+        """
+        Add a new subplan to the subplans. Remove any redudant or old operations.
+
+        Args:
+            step_id (int): Id of the current step
+            subplan (WayangPlan): The subplan to be inserted
+            subplans (dict): Current subplans to updated
+
+        Returns:
+            (dict): Updated subplans
+
+        """
+
+        # New dict for updated subplans
+        updated_subplans = {}
+
+        # New set for all new or improved operations
+        new_ids = set()
+        for op in subplan.operations:
+            new_ids.add(op.id)
+        
+        # Add only not improved operations
+        for old_step_id, old_subplan in subplans.items():
+            kept_ops = []
+            for op in old_subplan.operations:
+                if op.id not in new_ids:
+                    kept_ops.append(op)
+            
+            # Add operations if there are operations kept
+            if len(kept_ops) > 0:
+                old_subplan.operations = kept_ops
+                updated_subplans[old_step_id] = old_subplan
+        
+        # Add all new operations
+        updated_subplans[step_id] = subplan
+
+        # Return updated operations
+        return updated_subplans
+        
+
 
 
     def get_steps(self, steps: List, subplans: dict,  queue: List[Step]):
@@ -63,6 +111,9 @@ class StepHandler:
         for step_id in queue:
             # If step in queue found in steps
             if step_id in steps:
+                # Continue af step_id not in subplans
+                if step_id not in subplans:
+                    continue
                 # Add all generated operations
                 operations.extend(subplans[step_id].operations)
 
@@ -116,7 +167,7 @@ class StepHandler:
             return queue
             
         except Exception as e:
-            print("[Error Step Queue] {e}")
+            print(f"[Error Step Queue] {e}")
 
             # If an error occured, just return the queue in arbitrary step order
             queue = []
@@ -142,17 +193,18 @@ class StepHandler:
         # Create a map of all steps and their inputs
         step_input_map = {}
         for step in steps:
-            step_input_map[step.step_id] = step.input
+            step_input_map[step.step_id] = step.depends_on
         
         # Intialize map with all dependencies
         step_dependencies = {}
 
         # Add all dependencies to step
         for step in steps:
-            step_dependencies[step.step_id] = self._get_dependencies(step_input_map, step.step_id, None)
+            dependencies = self._get_dependencies(step_input_map, step.step_id, None)
+            step_dependencies[step.step_id] = list(dependencies)
 
         # Return final step input map with all dependencies
-        return step_input_map
+        return step_dependencies
         
 
     

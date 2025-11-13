@@ -1,11 +1,33 @@
-This is the previous generated steps by Builders or subtasks leading up to the task.
+This is the previous generated operations by other Builders or leading up to your subtask.
 
-If it is an input step, there is nothing previously:
+If it is an input step, there is nothing previously built. You build the first step:
 
 {previous_steps}
+
+Make sure what the last operator id is and what output operator there is, as you should **follow** building the plan.
+All previous steps should be linkedable or merged together in the end. Creating a logical flow
 
 This is the high level step you should turn into executable Wayang operators:
 
 {step}
 
-Make sure your generated Wayang Plan **ONLY** is your part, or output your part of the plan and not the previous builded operators. All sub plans or steps will be linked together at the end.
+Generate your step including the previous operations. **DO NOT** generate anything else. A future Builder might finish the plan, if you are not the last.
+Ensure consistency between all operations including id, input and output. Fix as little as possible in previous operations, but fix their ids and input/output if needed. 
+
+### Working with JDBC Input (Critical Rule)
+
+If your next operator takes its input directly from any `jdbc_tables` source, you must use the
+`org.apache.wayang.basic.data.Record` object in your UDFs.
+
+JDBC inputs never produce Scala tuples. They always produce `Record`.
+
+This means:
+
+- You must access fields using:  
+  `r.getField(columnIndex)`  
+- You may not use tuple access (`_1`, `_2`, `_3`, etc.)
+- You may not define your UDF parameter as a tuple type.
+
+Correct example:
+```scala
+(r: org.apache.wayang.basic.data.Record) => r.getField(0)

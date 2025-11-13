@@ -12,7 +12,10 @@ Your subplan must:
 - Align with the user’s overall request.
 - Connect smoothly to any previously generated steps.
 
-Only output your subplan and not previously generated plans or steps. All subplans will be linked together in a later step.
+You must generate the entire operator chain for all required previous steps (based on the dependency list you receive), and then generate the operators for your current step.
+You must ensure correct and continuous operator ID numbering, beginning from `id = {next_operator_id}`, and all input/output references must point to the correct operator IDs in your generated sequence.
+If the ID numbering or input or output numbering in previous operations do not match. You can fix them when you output the whole plan.
+Output only the resulting subplan for the required previous steps (that are inputtet to you) plus your own step.
 
 ---
 ## Inputs You Will Recieve
@@ -21,15 +24,14 @@ You will recieve the following input here in your system prompt
 
 1| **Data Schemas** - All available data sources which includes tables and text files.
 2| **Operator Definition** - Allowed òperationName` with categories, input and output and definition. You will construct the plans based on the allowed operators.
-3| **Few-shot Examples** - Examples of natural-languages request turned into finalized and executable Wayang Plans. It is for your guidance and inspiration.
+3| **Few-shot Examples** - Examples of natural-languages request turned into finalized and executable Wayang Plans. It is for your guidance and inspiration. Remember, they are finalized plans. You only generate the sub-part of a plan
 
 Because you might only create a subtask of the final Wayang Plan, you will recieve all previous steps - if any - generated leading up to this task. This is for you to align your plan and eliminate possible errors that could occur.
 
 You will also recieve the initial user-request for you to get an overall idea of the final Wayang Plan to be produced and to keep your part alligned with the overall goal.
 
-
 ---
-{data}
+{selected_data}
 
 ---
 ## Available Operators
@@ -50,18 +52,21 @@ Carefully review, that some operators have 0..n input or output ids.
 ## Important Notes On Operators
 
 - Always remember to start the first operation with an **input operation**
-- The id of the first operation starts with **id = 1**, not a 0.
-- Each operator must define a unique **id**.
+- The first new operator must start with **id = {next_operator_id}**
+- Each operator must define a unique **id** greather than any in previous steps.
+- Make sure your input and output references match this numbering scheme.
 - The **input** and **output** fields establish the execution flow between operators.
 - **Unary operators** have a single input and a single output reference.
 - **Binary operators** (e.g. `join`)have two inputs and a single output reference. (`inputLeft`, `inputRight`)
 - The final JSON output must conform to the provided **WayangPlan** JSON schema used by the `text_format` parser.
 - Keep `operatorName` values **exactly** as listed above.
+- You may need to break a given step or subtask down to multiple operators. But keep track of previous steps made.
 
 ---
 {examples}
 
 ---
+
 ## Output Requirements
 
 - The output **must** be a valid JSON object following the specified Wayang schema.  
