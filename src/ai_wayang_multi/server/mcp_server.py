@@ -13,7 +13,7 @@ from ai_wayang_multi.wayang.plan_validator import PlanValidator
 from ai_wayang_multi.wayang.wayang_executor import WayangExecutor
 from ai_wayang_multi.utils.logger import Logger
 from ai_wayang_multi.utils.schema_loader import SchemaLoader
-from datetime import datetime
+from typing import Optional
 import os
 
 # Initialize MCP-server
@@ -42,7 +42,7 @@ wayang_executor = WayangExecutor() # Wayang executor
 last_session_result = "Nothing to output"
 
 @mcp.tool()
-def query_wayang(describe_wayang_plan: str, model: str | None = None, reasoning: str | None = None) -> str:
+def query_wayang(describe_wayang_plan: str, model: Optional[str] = None, reasoning: Optional[str] = None, use_debugger: Optional[str] = "True") -> str:
     """
     Generates and execute a Wayang plan based on given query in national language.
     The query provided must be in Englis
@@ -75,6 +75,7 @@ def query_wayang(describe_wayang_plan: str, model: str | None = None, reasoning:
         # Set up logger 
         logger = Logger()
         logger.add_message("User query: Plan description from client LLM", describe_wayang_plan)
+        logger.add_message("Architecture", {"model": model, "architecture": "multi", "debugger": use_debugger})
         print("[INFO] Starting generating Wayang plans")
         
         # Initialize important variables
@@ -237,7 +238,7 @@ def query_wayang(describe_wayang_plan: str, model: str | None = None, reasoning:
         ### --- Debug Plan --- ###
         
         # Check if debugger should be used
-        use_debugger = DEBUGGER_AGENT_CONFIG.get("use_debugger")
+        #use_debugger = DEBUGGER_AGENT_CONFIG.get("use_debugger")
 
         # Use debugger if true
         if use_debugger == "True" and status_code != 200:
