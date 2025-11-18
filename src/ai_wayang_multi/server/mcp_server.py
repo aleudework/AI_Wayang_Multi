@@ -75,7 +75,7 @@ def query_wayang(describe_wayang_plan: str, model: Optional[str] = None, reasoni
         # Set up logger 
         logger = Logger()
         logger.add_message("User query: Plan description from client LLM", describe_wayang_plan)
-        logger.add_message("Architecture", {"model": model, "architecture": "multi", "debugger": use_debugger})
+        logger.add_message("Architecture", {"model": model, "architecture": "Multi", "debugger": use_debugger})
         print("[INFO] Starting generating Wayang plans")
         
         # Initialize important variables
