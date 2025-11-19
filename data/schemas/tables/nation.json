@@ -1,0 +1,36 @@
+{
+  "nation": {
+    "table_description": null,
+    "input_type": "jdbc_input",
+    "columns": {
+      "n_nationkey": {
+        "type": "integer",
+        "examples": [
+          "2",
+          "17"
+        ]
+      },
+      "n_name": {
+        "type": "character varying",
+        "examples": [
+          "BRAZIL",
+          "PERU"
+        ]
+      },
+      "n_regionkey": {
+        "type": "integer",
+        "examples": [
+          "1",
+          "1"
+        ]
+      },
+      "n_comment": {
+        "type": "character varying",
+        "examples": [
+          "y alongside of the pending deposits. carefully special packages are about the ironic forges. slyly special ",
+          "platelets. blithely pending dependencies use fluffily across the even pinto beans. carefully silent accoun"
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,120 @@
+{
+  "lineitem": {
+    "table_description": null,
+    "input_type": "jdbc_input",
+    "columns": {
+      "l_orderkey": {
+        "type": "integer",
+        "examples": [
+          "5855461",
+          "2456576"
+        ]
+      },
+      "l_partkey": {
+        "type": "integer",
+        "examples": [
+          "190229",
+          "152852"
+        ]
+      },
+      "l_suppkey": {
+        "type": "integer",
+        "examples": [
+          "5268",
+          "398"
+        ]
+      },
+      "l_linenumber": {
+        "type": "integer",
+        "examples": [
+          "5",
+          "5"
+        ]
+      },
+      "l_quantity": {
+        "type": "numeric",
+        "examples": [
+          50.0,
+          4.0
+        ]
+      },
+      "l_extendedprice": {
+        "type": "numeric",
+        "examples": [
+          65961.0,
+          7619.4
+        ]
+      },
+      "l_discount": {
+        "type": "numeric",
+        "examples": [
+          0.04,
+          0.03
+        ]
+      },
+      "l_tax": {
+        "type": "numeric",
+        "examples": [
+          0.02,
+          0.08
+        ]
+      },
+      "l_returnflag": {
+        "type": "character",
+        "examples": [
+          "R",
+          "N"
+        ]
+      },
+      "l_linestatus": {
+        "type": "character",
+        "examples": [
+          "F",
+          "F"
+        ]
+      },
+      "l_shipdate": {
+        "type": "date",
+        "examples": [
+          "1994-07-11",
+          "1995-05-31"
+        ]
+      },
+      "l_commitdate": {
+        "type": "date",
+        "examples": [
+          "1994-06-26",
+          "1995-08-01"
+        ]
+      },
+      "l_receiptdate": {
+        "type": "date",
+        "examples": [
+          "1994-07-19",
+          "1995-06-20"
+        ]
+      },
+      "l_shipinstruct": {
+        "type": "character varying",
+        "examples": [
+          "TAKE BACK RETURN",
+          "COLLECT COD"
+        ]
+      },
+      "l_shipmode": {
+        "type": "character varying",
+        "examples": [
+          "REG AIR",
+          "MAIL"
+        ]
+      },
+      "l_comment": {
+        "type": "character varying",
+        "examples": [
+          "ar attainments nag furi",
+          "ly pending depos"
+        ]
+      }
+    }
+  }
+}

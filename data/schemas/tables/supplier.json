@@ -1,0 +1,57 @@
+{
+  "supplier": {
+    "table_description": null,
+    "input_type": "jdbc_input",
+    "columns": {
+      "s_suppkey": {
+        "type": "integer",
+        "examples": [
+          "3153",
+          "7854"
+        ]
+      },
+      "s_name": {
+        "type": "character varying",
+        "examples": [
+          "Supplier#000003153",
+          "Supplier#000007854"
+        ]
+      },
+      "s_address": {
+        "type": "character varying",
+        "examples": [
+          "zZjHS,4cNlNAK1KFaFTNpYh9Y5Ceb",
+          "RAwjGaqKjgYiV6LhI4SBOnaQ8BtGR0C BfnaFmq2"
+        ]
+      },
+      "s_nationkey": {
+        "type": "integer",
+        "examples": [
+          "6",
+          "10"
+        ]
+      },
+      "s_phone": {
+        "type": "character varying",
+        "examples": [
+          "16-690-660-2374",
+          "20-144-639-4321"
+        ]
+      },
+      "s_acctbal": {
+        "type": "numeric",
+        "examples": [
+          4310.54,
+          6829.83
+        ]
+      },
+      "s_comment": {
+        "type": "character varying",
+        "examples": [
+          "final dependencies are carefully final, final dinos",
+          "ven, regular platelets. slyly ironic"
+        ]
+      }
+    }
+  }
+}
