@@ -1,0 +1,11 @@
+{
+  "organisations_for_tasks": {
+    "file_description": null,
+    "input_type": "textfile_input",
+    "examples_lines_from_file": [
+      "Asminderød Boligselskab",
+      "Ballerup almennyttige Boligselskab",
+      "Gladsaxe almennyttige Boligselskab"
+    ]
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "factpurchases": {
+    "table_description": null,
+    "input_type": "jdbc_input",
+    "columns": {
+      "purchase_id": {
+        "type": "integer",
+        "examples": [
+          "1163374",
+          "1444616"
+        ]
+      },
+      "organisation_id": {
+        "type": "integer",
+        "examples": [
+          "22",
+          "97"
+        ]
+      },
+      "department_id": {
+        "type": "integer",
+        "examples": [
+          "361",
+          "1754"
+        ]
+      },
+      "creditor_id": {
+        "type": "integer",
+        "examples": [
+          "202896",
+          "223310"
+        ]
+      },
+      "invoice_id": {
+        "type": "integer",
+        "examples": [
+          "928511",
+          "-1"
+        ]
+      },
+      "invoice_date": {
+        "type": "date",
+        "examples": [
+          "2025-04-29",
+          "2025-07-15"
+        ]
+      },
+      "invoice_line_no": {
+        "type": "integer",
+        "examples": [
+          "1",
+          "1"
+        ]
+      },
+      "invoice_line_descr": {
+        "type": "text",
+        "examples": [
+          "Rengøring (normal istandsættelse)",
+          "Køleskab til køkken"
+        ]
+      },
+      "invoice_line_price": {
+        "type": "numeric",
+        "examples": [
+          521.82,
+          4200.0
+        ]
+      }
+    }
+  }
+}

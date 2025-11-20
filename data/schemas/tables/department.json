@@ -1,0 +1,43 @@
+{
+  "department": {
+    "table_description": null,
+    "input_type": "jdbc_input",
+    "columns": {
+      "department_id": {
+        "type": "integer",
+        "examples": [
+          "1999",
+          "1500"
+        ]
+      },
+      "organisation_id": {
+        "type": "integer",
+        "examples": [
+          "115",
+          "93"
+        ]
+      },
+      "name": {
+        "type": "text",
+        "examples": [
+          "Ølby - 686-0",
+          "Pilehavehus servicearealer"
+        ]
+      },
+      "operation_center": {
+        "type": "text",
+        "examples": [
+          "Ejendomskontoret",
+          "Pilehavehus"
+        ]
+      },
+      "esyn": {
+        "type": "integer",
+        "examples": [
+          1.0,
+          NaN
+        ]
+      }
+    }
+  }
+}

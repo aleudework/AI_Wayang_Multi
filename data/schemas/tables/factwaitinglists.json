@@ -1,0 +1,64 @@
+{
+  "factwaitinglists": {
+    "table_description": null,
+    "input_type": "jdbc_input",
+    "columns": {
+      "waitinglist_id": {
+        "type": "integer",
+        "examples": [
+          "3392",
+          "3211"
+        ]
+      },
+      "organisation_id": {
+        "type": "integer",
+        "examples": [
+          "14",
+          "38"
+        ]
+      },
+      "year_month": {
+        "type": "text",
+        "examples": [
+          "2024-07",
+          "2024-06"
+        ]
+      },
+      "year": {
+        "type": "integer",
+        "examples": [
+          "2024",
+          "2024"
+        ]
+      },
+      "month": {
+        "type": "integer",
+        "examples": [
+          "7",
+          "6"
+        ]
+      },
+      "date": {
+        "type": "date",
+        "examples": [
+          "2024-07-31",
+          "2024-06-30"
+        ]
+      },
+      "waiting_list_type": {
+        "type": "text",
+        "examples": [
+          "B1 Bero Ekstern",
+          "A0 Aktiv Intern"
+        ]
+      },
+      "total": {
+        "type": "integer",
+        "examples": [
+          "7432",
+          "12"
+        ]
+      }
+    }
+  }
+}

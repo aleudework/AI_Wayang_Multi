@@ -1,0 +1,10 @@
+{
+  "inspect_creditors": {
+    "file_description": null,
+    "input_type": "textfile_input",
+    "examples_lines_from_file": [
+      "Bolind A/S - 110644",
+      "Brødrene Dahl A/S - 359612"
+    ]
+  }
+}

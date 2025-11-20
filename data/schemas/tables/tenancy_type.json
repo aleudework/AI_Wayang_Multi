@@ -1,0 +1,43 @@
+{
+  "tenancy_type": {
+    "table_description": null,
+    "input_type": "jdbc_input",
+    "columns": {
+      "tenancy_types_id": {
+        "type": "integer",
+        "examples": [
+          "34",
+          "30"
+        ]
+      },
+      "tenancy_description": {
+        "type": "text",
+        "examples": [
+          "Erhverv andet",
+          "GK Almen Ældrebolig"
+        ]
+      },
+      "secondary_tenancy": {
+        "type": "text",
+        "examples": [
+          "Ikke bilejemål",
+          "Ikke bilejemål"
+        ]
+      },
+      "housing_tenancy": {
+        "type": "integer",
+        "examples": [
+          "0",
+          "0"
+        ]
+      },
+      "tenancy_weight": {
+        "type": "text",
+        "examples": [
+          null,
+          "1"
+        ]
+      }
+    }
+  }
+}

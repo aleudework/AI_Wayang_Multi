@@ -1,0 +1,57 @@
+{
+  "factmoveouts": {
+    "table_description": null,
+    "input_type": "jdbc_input",
+    "columns": {
+      "moveout_id": {
+        "type": "integer",
+        "examples": [
+          "6514",
+          "4291"
+        ]
+      },
+      "organisation_id": {
+        "type": "integer",
+        "examples": [
+          "12",
+          "40"
+        ]
+      },
+      "department_id": {
+        "type": "integer",
+        "examples": [
+          "155",
+          "622"
+        ]
+      },
+      "tenancy_types_id": {
+        "type": "integer",
+        "examples": [
+          "1",
+          "1"
+        ]
+      },
+      "move_out_year": {
+        "type": "integer",
+        "examples": [
+          "2025",
+          "2022"
+        ]
+      },
+      "years_lived": {
+        "type": "integer",
+        "examples": [
+          "101",
+          "8"
+        ]
+      },
+      "sum_of_move_outs": {
+        "type": "integer",
+        "examples": [
+          "8",
+          "3"
+        ]
+      }
+    }
+  }
+}
