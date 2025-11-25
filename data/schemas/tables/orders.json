@@ -1,0 +1,71 @@
+{
+  "orders": {
+    "table_description": null,
+    "input_type": "jdbc_input",
+    "columns": {
+      "o_orderkey": {
+        "type": "integer",
+        "examples": [
+          "4482341",
+          "1788135"
+        ]
+      },
+      "o_custkey": {
+        "type": "integer",
+        "examples": [
+          "19882",
+          "57191"
+        ]
+      },
+      "o_orderstatus": {
+        "type": "character",
+        "examples": [
+          "F",
+          "O"
+        ]
+      },
+      "o_totalprice": {
+        "type": "numeric",
+        "examples": [
+          172591.67,
+          118852.74
+        ]
+      },
+      "o_orderdate": {
+        "type": "date",
+        "examples": [
+          "1994-02-14",
+          "1998-03-27"
+        ]
+      },
+      "o_orderpriority": {
+        "type": "character",
+        "examples": [
+          "1-URGENT       ",
+          "3-MEDIUM       "
+        ]
+      },
+      "o_clerk": {
+        "type": "character",
+        "examples": [
+          "Clerk#000000793",
+          "Clerk#000000045"
+        ]
+      },
+      "o_shippriority": {
+        "type": "integer",
+        "examples": [
+          "0",
+          "0"
+        ]
+      },
+      "o_comment": {
+        "type": "character varying",
+        "examples": [
+          " stealthily regular requests. furiously unusual deposits was. slyly spec",
+          "es are. carefully special theodolites use carefully. ironic dolphins caj"
+        ]
+      }
+    }
+  }
+}

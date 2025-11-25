@@ -1,0 +1,120 @@
+{
+  "lineitem": {
+    "table_description": null,
+    "input_type": "jdbc_input",
+    "columns": {
+      "l_orderkey": {
+        "type": "integer",
+        "examples": [
+          "871782",
+          "231843"
+        ]
+      },
+      "l_partkey": {
+        "type": "integer",
+        "examples": [
+          "81222",
+          "69079"
+        ]
+      },
+      "l_suppkey": {
+        "type": "integer",
+        "examples": [
+          "8747",
+          "1586"
+        ]
+      },
+      "l_linenumber": {
+        "type": "integer",
+        "examples": [
+          "5",
+          "5"
+        ]
+      },
+      "l_quantity": {
+        "type": "numeric",
+        "examples": [
+          33.0,
+          48.0
+        ]
+      },
+      "l_extendedprice": {
+        "type": "numeric",
+        "examples": [
+          39706.26,
+          50307.36
+        ]
+      },
+      "l_discount": {
+        "type": "numeric",
+        "examples": [
+          0.03,
+          0.09
+        ]
+      },
+      "l_tax": {
+        "type": "numeric",
+        "examples": [
+          0.08,
+          0.03
+        ]
+      },
+      "l_returnflag": {
+        "type": "character",
+        "examples": [
+          "N",
+          "A"
+        ]
+      },
+      "l_linestatus": {
+        "type": "character",
+        "examples": [
+          "O",
+          "F"
+        ]
+      },
+      "l_shipdate": {
+        "type": "date",
+        "examples": [
+          "1995-12-16",
+          "1993-01-24"
+        ]
+      },
+      "l_commitdate": {
+        "type": "date",
+        "examples": [
+          "1995-11-16",
+          "1993-03-22"
+        ]
+      },
+      "l_receiptdate": {
+        "type": "date",
+        "examples": [
+          "1995-12-24",
+          "1993-01-27"
+        ]
+      },
+      "l_shipinstruct": {
+        "type": "character varying",
+        "examples": [
+          "NONE",
+          "DELIVER IN PERSON"
+        ]
+      },
+      "l_shipmode": {
+        "type": "character varying",
+        "examples": [
+          "REG AIR",
+          "SHIP"
+        ]
+      },
+      "l_comment": {
+        "type": "character varying",
+        "examples": [
+          "egular foxes sleep furiously.",
+          "ithely regular waters. accounts h"
+        ]
+      }
+    }
+  }
+}

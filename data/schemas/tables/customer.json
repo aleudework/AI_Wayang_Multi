@@ -1,0 +1,64 @@
+{
+  "customer": {
+    "table_description": null,
+    "input_type": "jdbc_input",
+    "columns": {
+      "c_custkey": {
+        "type": "integer",
+        "examples": [
+          "85617",
+          "57721"
+        ]
+      },
+      "c_name": {
+        "type": "character varying",
+        "examples": [
+          "Customer#000085617",
+          "Customer#000057721"
+        ]
+      },
+      "c_address": {
+        "type": "character varying",
+        "examples": [
+          "OwKgpjuaIWN6qph hCmC5fNzzqHitaI",
+          "ozNicz9BpqcUjMSsIevRgYWf38Tfa"
+        ]
+      },
+      "c_nationkey": {
+        "type": "integer",
+        "examples": [
+          "14",
+          "9"
+        ]
+      },
+      "c_phone": {
+        "type": "character varying",
+        "examples": [
+          "24-317-361-6406",
+          "19-579-716-6123"
+        ]
+      },
+      "c_acctbal": {
+        "type": "numeric",
+        "examples": [
+          8444.43,
+          300.03
+        ]
+      },
+      "c_mktsegment": {
+        "type": "character varying",
+        "examples": [
+          "FURNITURE",
+          "BUILDING"
+        ]
+      },
+      "c_comment": {
+        "type": "character varying",
+        "examples": [
+          " regular, unusual deposits-- furiously final deposits cajole slyly. ironic requests haggle bl",
+          "carefully pending pinto beans. requests snooze slyly after the "
+        ]
+      }
+    }
+  }
+}

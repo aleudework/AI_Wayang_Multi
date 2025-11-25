@@ -1,0 +1,43 @@
+{
+  "partsupp": {
+    "table_description": null,
+    "input_type": "jdbc_input",
+    "columns": {
+      "ps_partkey": {
+        "type": "integer",
+        "examples": [
+          "123383",
+          "129903"
+        ]
+      },
+      "ps_suppkey": {
+        "type": "integer",
+        "examples": [
+          "8408",
+          "9904"
+        ]
+      },
+      "ps_availqty": {
+        "type": "integer",
+        "examples": [
+          "718",
+          "9947"
+        ]
+      },
+      "ps_supplycost": {
+        "type": "numeric",
+        "examples": [
+          490.46,
+          863.37
+        ]
+      },
+      "ps_comment": {
+        "type": "character varying",
+        "examples": [
+          ". regular packages after the carefully final pinto beans haggle slyly ironic grouches. pending deposits boost whithout the furiously final orbits. sil",
+          "lly special requests wake blithely requests. slyly pending packages cajole slyly. deposits against the "
+        ]
+      }
+    }
+  }
+}

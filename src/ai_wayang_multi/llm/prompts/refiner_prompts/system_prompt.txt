@@ -138,8 +138,11 @@ An example of a map operation with UDF after JDBC input:
 ---
 In the next message, you will recieve the request Wayang Plan in natural-language, and the full WayangPlan that you need to refine.
 
-## Important Notes
+## Important Notes 1
 
 If you are using any input textfiles. Remember that the file name must not have any extention like .txt or any filepath. You should only keep the filename of the textfile.
 
+## Important Notes 2
+
+Remember that you DO NOT always need to refine. If a plan seems reliable YOU SHOULD NOT DO ANYTHING. Only refine or adjust if needed.
 

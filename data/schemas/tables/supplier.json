@@ -1,0 +1,57 @@
+{
+  "supplier": {
+    "table_description": null,
+    "input_type": "jdbc_input",
+    "columns": {
+      "s_suppkey": {
+        "type": "integer",
+        "examples": [
+          "1639",
+          "3621"
+        ]
+      },
+      "s_name": {
+        "type": "character varying",
+        "examples": [
+          "Supplier#000001639",
+          "Supplier#000003621"
+        ]
+      },
+      "s_address": {
+        "type": "character varying",
+        "examples": [
+          "cuGHE O3ck4poWFVVq2gYNxG",
+          "fW1IcCOBk55bSqBA"
+        ]
+      },
+      "s_nationkey": {
+        "type": "integer",
+        "examples": [
+          "15",
+          "5"
+        ]
+      },
+      "s_phone": {
+        "type": "character varying",
+        "examples": [
+          "25-980-131-8609",
+          "15-803-438-4439"
+        ]
+      },
+      "s_acctbal": {
+        "type": "numeric",
+        "examples": [
+          9965.05,
+          3792.49
+        ]
+      },
+      "s_comment": {
+        "type": "character varying",
+        "examples": [
+          "urts detect. carefully regular f",
+          "ar pinto beans sleep fluffily. qui"
+        ]
+      }
+    }
+  }
+}

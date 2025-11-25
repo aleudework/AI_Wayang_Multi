@@ -1,0 +1,36 @@
+{
+  "nation": {
+    "table_description": null,
+    "input_type": "jdbc_input",
+    "columns": {
+      "n_nationkey": {
+        "type": "integer",
+        "examples": [
+          "20",
+          "24"
+        ]
+      },
+      "n_name": {
+        "type": "character varying",
+        "examples": [
+          "SAUDI ARABIA",
+          "UNITED STATES"
+        ]
+      },
+      "n_regionkey": {
+        "type": "integer",
+        "examples": [
+          "4",
+          "1"
+        ]
+      },
+      "n_comment": {
+        "type": "character varying",
+        "examples": [
+          "ts. silent requests haggle. closely express packages sleep across the blithely",
+          "y final packages. slow foxes cajole quickly. quickly silent platelets breach ironic accounts. unusual pinto be"
+        ]
+      }
+    }
+  }
+}
