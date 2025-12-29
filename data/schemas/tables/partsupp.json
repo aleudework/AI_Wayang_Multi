@@ -6,36 +6,36 @@
       "ps_partkey": {
         "type": "integer",
         "examples": [
-          "123383",
-          "129903"
+          "23171",
+          "186750"
         ]
       },
       "ps_suppkey": {
         "type": "integer",
         "examples": [
-          "8408",
-          "9904"
+          "3172",
+          "9269"
         ]
       },
       "ps_availqty": {
         "type": "integer",
         "examples": [
-          "718",
-          "9947"
+          "3018",
+          "7747"
         ]
       },
       "ps_supplycost": {
         "type": "numeric",
         "examples": [
-          490.46,
-          863.37
+          71.71,
+          181.57
         ]
       },
       "ps_comment": {
         "type": "character varying",
         "examples": [
-          ". regular packages after the carefully final pinto beans haggle slyly ironic grouches. pending deposits boost whithout the furiously final orbits. sil",
-          "lly special requests wake blithely requests. slyly pending packages cajole slyly. deposits against the "
+          "y special packages. unusual deposits across the furiously even warthogs boost slyly about the furiously ironic ideas. e",
+          "y. unusual, even pinto beans cajole quietly. quickly regular excuses must sleep carefully along the fluffily pending instructions. q"
         ]
       }
     }

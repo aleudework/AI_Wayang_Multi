@@ -6,15 +6,15 @@
       "o_orderkey": {
         "type": "integer",
         "examples": [
-          "4482341",
-          "1788135"
+          "5731334",
+          "314054"
         ]
       },
       "o_custkey": {
         "type": "integer",
         "examples": [
-          "19882",
-          "57191"
+          "86387",
+          "63278"
         ]
       },
       "o_orderstatus": {
@@ -27,29 +27,29 @@
       "o_totalprice": {
         "type": "numeric",
         "examples": [
-          172591.67,
-          118852.74
+          161570.13,
+          42109.34
         ]
       },
       "o_orderdate": {
         "type": "date",
         "examples": [
-          "1994-02-14",
-          "1998-03-27"
+          "1994-01-13",
+          "1996-08-26"
         ]
       },
       "o_orderpriority": {
         "type": "character",
         "examples": [
-          "1-URGENT       ",
-          "3-MEDIUM       "
+          "5-LOW          ",
+          "1-URGENT       "
         ]
       },
       "o_clerk": {
         "type": "character",
         "examples": [
-          "Clerk#000000793",
-          "Clerk#000000045"
+          "Clerk#000000644",
+          "Clerk#000000848"
         ]
       },
       "o_shippriority": {
@@ -62,8 +62,8 @@
       "o_comment": {
         "type": "character varying",
         "examples": [
-          " stealthily regular requests. furiously unusual deposits was. slyly spec",
-          "es are. carefully special theodolites use carefully. ironic dolphins caj"
+          "tions against the final, careful accounts wake never according to the regul",
+          "kages. special packages wake furiously furious"
         ]
       }
     }

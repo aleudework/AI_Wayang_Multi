@@ -6,64 +6,64 @@
       "p_partkey": {
         "type": "integer",
         "examples": [
-          "122168",
-          "130560"
+          "39139",
+          "32859"
         ]
       },
       "p_name": {
         "type": "character varying",
         "examples": [
-          "bisque dodger drab floral khaki",
-          "seashell saddle lace indian snow"
+          "misty beige bisque puff light",
+          "chiffon sandy sky azure bisque"
         ]
       },
       "p_mfgr": {
         "type": "character varying",
         "examples": [
-          "Manufacturer#2",
+          "Manufacturer#5",
           "Manufacturer#1"
         ]
       },
       "p_brand": {
         "type": "character varying",
         "examples": [
-          "Brand#25",
+          "Brand#51",
           "Brand#11"
         ]
       },
       "p_type": {
         "type": "character varying",
         "examples": [
-          "ECONOMY BURNISHED COPPER",
-          "LARGE PLATED COPPER"
+          "MEDIUM PLATED TIN",
+          "MEDIUM PLATED STEEL"
         ]
       },
       "p_size": {
         "type": "integer",
         "examples": [
-          "7",
-          "17"
+          "31",
+          "21"
         ]
       },
       "p_container": {
         "type": "character varying",
         "examples": [
-          "JUMBO CAN",
-          "JUMBO DRUM"
+          "LG PACK",
+          "SM PACK"
         ]
       },
       "p_retailprice": {
         "type": "numeric",
         "examples": [
-          1190.16,
-          1590.56
+          1078.13,
+          1791.85
         ]
       },
       "p_comment": {
         "type": "character varying",
         "examples": [
-          "d, final pinto be",
-          "pinto beans nod car"
+          "ickly final fox",
+          "regular,"
         ]
       }
     }

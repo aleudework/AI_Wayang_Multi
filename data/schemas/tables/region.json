@@ -6,22 +6,22 @@
       "r_regionkey": {
         "type": "integer",
         "examples": [
-          "0",
-          "3"
+          "1",
+          "4"
         ]
       },
       "r_name": {
         "type": "character varying",
         "examples": [
-          "AFRICA",
-          "EUROPE"
+          "AMERICA",
+          "MIDDLE EAST"
         ]
       },
       "r_comment": {
         "type": "character varying",
         "examples": [
-          "lar deposits. blithely final packages cajole. regular waters are final requests. regular accounts are according to ",
-          "ly final courts cajole furiously final excuse"
+          "hs use ironic, even requests. s",
+          "uickly special accounts cajole carefully blithely close requests. carefully final asymptotes haggle furiousl"
         ]
       }
     }

@@ -6,50 +6,50 @@
       "s_suppkey": {
         "type": "integer",
         "examples": [
-          "1639",
-          "3621"
+          "6893",
+          "3552"
         ]
       },
       "s_name": {
         "type": "character varying",
         "examples": [
-          "Supplier#000001639",
-          "Supplier#000003621"
+          "Supplier#000006893",
+          "Supplier#000003552"
         ]
       },
       "s_address": {
         "type": "character varying",
         "examples": [
-          "cuGHE O3ck4poWFVVq2gYNxG",
-          "fW1IcCOBk55bSqBA"
+          "1qx2LTrRiB6nflwp RPEsLbBRNQspABzH Z",
+          "PMWgNdKj2YRTgdEaZZdqizMj"
         ]
       },
       "s_nationkey": {
         "type": "integer",
         "examples": [
-          "15",
-          "5"
+          "4",
+          "17"
         ]
       },
       "s_phone": {
         "type": "character varying",
         "examples": [
-          "25-980-131-8609",
-          "15-803-438-4439"
+          "14-513-183-2336",
+          "27-230-716-8375"
         ]
       },
       "s_acctbal": {
         "type": "numeric",
         "examples": [
-          9965.05,
-          3792.49
+          824.1,
+          5019.77
         ]
       },
       "s_comment": {
         "type": "character varying",
         "examples": [
-          "urts detect. carefully regular f",
-          "ar pinto beans sleep fluffily. qui"
+          "egular, even foxes. special ",
+          "lar accounts. furiously regular ideas sleep quickly slyly ironic ideas. fl"
         ]
       }
     }

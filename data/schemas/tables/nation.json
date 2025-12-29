@@ -6,29 +6,29 @@
       "n_nationkey": {
         "type": "integer",
         "examples": [
-          "20",
-          "24"
+          "19",
+          "7"
         ]
       },
       "n_name": {
         "type": "character varying",
         "examples": [
-          "SAUDI ARABIA",
-          "UNITED STATES"
+          "ROMANIA",
+          "GERMANY"
         ]
       },
       "n_regionkey": {
         "type": "integer",
         "examples": [
-          "4",
-          "1"
+          "3",
+          "3"
         ]
       },
       "n_comment": {
         "type": "character varying",
         "examples": [
-          "ts. silent requests haggle. closely express packages sleep across the blithely",
-          "y final packages. slow foxes cajole quickly. quickly silent platelets breach ironic accounts. unusual pinto be"
+          "ular asymptotes are about the furious multipliers. express dependencies nag above the ironically ironic account",
+          "l platelets. regular accounts x-ray: unusual, regular acco"
         ]
       }
     }
