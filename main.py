@@ -11,9 +11,9 @@ from src.ai_wayang_multi.server.mcp_server import mcp
 
 def main():
     """
-    Starts the MCP-server
+    Starts the MCP-server, default is port 9500
     """
-    #mcp.run(transport="streamable-http")
+
     mcp.run(transport="sse")
     print(f"Starts MCP-server")
 

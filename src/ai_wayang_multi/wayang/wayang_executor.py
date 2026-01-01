@@ -1,6 +1,5 @@
 from ai_wayang_multi.config.settings import WAYANG_CONFIG
 import requests
-import json
 
 class WayangExecutor:
     """

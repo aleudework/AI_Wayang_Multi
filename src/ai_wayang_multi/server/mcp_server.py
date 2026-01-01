@@ -27,6 +27,7 @@ config = {
 }
 
 # Initialize agents and objects
+# Agents are initialized outside the tools to cache system prompts (and save token cost)
 specifier_agent = Specifier() # Initialize specifier agent
 selector_agent = Selector() # Initialize selector agent
 decomposer_agent = Decomposer() # Initialize planner agent
@@ -84,6 +85,7 @@ def query_wayang(describe_wayang_plan: str, model: Optional[str] = "gpt-5-nano",
         version = 1 # Keeping track of plan version for this session
 
 
+
         ### --- Specifier Agent, to specify clearly write the user's request --- ###
 
         specifier_agent.start() # New specifier session
@@ -94,6 +96,7 @@ def query_wayang(describe_wayang_plan: str, model: Optional[str] = "gpt-5-nano",
         print("[INFO] SpecifierAgent: User query refined and clearified")
         logger.add_message("Agent Usage: SpecifierAgent Information", {"model": str(response["raw"].model), "usage": response["raw"].usage.model_dump()})
         logger.add_message("Agent: SpecifierAgent Output", refined_query)        
+
 
 
         ### --- Selector Agent, to select relevant data sources --- ###
@@ -107,6 +110,7 @@ def query_wayang(describe_wayang_plan: str, model: Optional[str] = "gpt-5-nano",
         logger.add_message("Agent Usage: SelectorAgent Information", {"model": str(response["raw"].model), "usage": response["raw"].usage.model_dump()})
         logger.add_message("Agent: SelectorAgent Output", data_selected.model_dump())
 
+
         
         ### --- Decomposer Agent, to decompose the user's query into subtasks / steps for Builders --- ###
 
@@ -118,6 +122,7 @@ def query_wayang(describe_wayang_plan: str, model: Optional[str] = "gpt-5-nano",
         print("[INFO] DecomposerAgent: High level Wayang Plan built")
         logger.add_message("Agent Usage: DecomposerAgent Information", {"model": str(response["raw"].model), "usage": response["raw"].usage.model_dump()})
         logger.add_message("Agent: DecomposerAgent Output", highlevel_plan.model_dump())
+
 
 
         ### --- Builder Agents, builds the Wayang Plan from the high level plan --- ###
@@ -145,7 +150,6 @@ def query_wayang(describe_wayang_plan: str, model: Optional[str] = "gpt-5-nano",
 
             # Get current step from Decomposer
             for step in steps:
-
                 if step.step_id == step_id:
                     current_step = step
                     break
@@ -174,6 +178,7 @@ def query_wayang(describe_wayang_plan: str, model: Optional[str] = "gpt-5-nano",
         logger.add_message("Class: StepHandler merged subplans to full plan", full_plan.model_dump())
 
 
+
         ### --- Refiner Agent: Refine the full plan to be executable in Wayang Server --- ###
 
         refiner_agent.start(data_selected) # New refiner session
@@ -200,6 +205,7 @@ def query_wayang(describe_wayang_plan: str, model: Optional[str] = "gpt-5-nano",
         logger.add_message("Class: PlanMapper Mapped the refined plan finalized for execution", {"version": 1, "plan": wayang_plan})
 
 
+
         ### --- Validate Plan --- ###
 
         # Logging
@@ -221,6 +227,7 @@ def query_wayang(describe_wayang_plan: str, model: Optional[str] = "gpt-5-nano",
             status_code = 400
 
 
+
         ### --- Execute Plan If Validated Successfully --- ###
 
         if val_success:
@@ -234,6 +241,7 @@ def query_wayang(describe_wayang_plan: str, model: Optional[str] = "gpt-5-nano",
                 print(f"[INFO] Couldn't execute plan succesfully, status {status_code}")
                 logger.add_message("Err: Wayang error. Plan executed unsucessful", {"status_code": status_code, "output": result})
         
+
 
         ### --- Debug Plan --- ###
         

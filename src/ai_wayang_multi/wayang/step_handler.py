@@ -3,7 +3,7 @@ from ai_wayang_multi.llm.models import Step, WayangPlan
 
 class StepHandler:
     """
-    Different function to handle steps from Decomposer and WayangPlanStep from Builder
+    Different functions to handle steps from Decomposer and WayangPlanStep from Builder Agent
 
     """
 
@@ -87,8 +87,6 @@ class StepHandler:
         return updated_subplans
         
 
-
-
     def get_steps(self, steps: List, subplans: dict,  queue: List[Step]):
         """
         Show previous steps built, but only relevant steps in queue order.
@@ -135,14 +133,14 @@ class StepHandler:
         try:
             total_steps = len(step_input_map) # Number of total steps in plan
             queued_steps = 0 # Number of steps queued
-            queue = [] # Queue of all steps
+            queue = [] # Queue for all steps
 
-            # Keep queueing steps until empty
+            # Continue until all steps are queued
             while queued_steps < total_steps:
                 # Intialize variable for step_id to queue
                 step_to_queue = None
 
-                # Find the step ready for queue
+                # Find the next step ready for queue (step with no dependencies left)
                 for step_id in list(step_input_map.keys()):
                     # Found step ready for queue
                     if len(step_input_map[step_id]) == 0:
@@ -150,11 +148,11 @@ class StepHandler:
                         del step_input_map[step_id] # Delete from the step_map used for iteration
                         break
                 
-                # Go to exeception if no step is ready for queue 
+                # Go to exeception if no step is ready for queue / all steps have dependencies left in an iteration
                 if step_to_queue is None:
                     raise ValueError("Logical input flow in WayangPlanHighLight doesn't match")
 
-                # Remove the step added to queue from all other steps
+                # Remove the step added to queue from all other steps, as it is now handled
                 for step_id, inputs in step_input_map.items():
                     for input in inputs[:]:
                         if input == step_to_queue:
